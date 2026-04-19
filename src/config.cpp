@@ -1,0 +1,34 @@
+#include "config.h"
+
+#include "documentmanager.h"
+#include "filepath.h"
+#include "rapidjson/document.h"
+
+#include <filesystem>
+#include <iostream>
+#include <string>
+
+Config::Config() {
+    if (!std::filesystem::exists(GAME_CONFIG_PATH)) {
+        std::cout << "error: " << GAME_CONFIG_PATH << " missing";
+        exit(0);
+    }
+
+    const rapidjson::Document &gameConfigDocument =
+        DocumentManager::getGameConfig();
+
+    for (const auto &member : gameConfigDocument.GetObject()) {
+        const std::string_view key = member.name.GetString();
+
+        if (key == "game_title") {
+            gameTitle = member.value.GetString();
+        } else if (key == "initial_scene") {
+            initialScene = member.value.GetString();
+        }
+    }
+
+    if (initialScene.empty()) {
+        std::cout << "error: initial_scene unspecified";
+        exit(0);
+    }
+}

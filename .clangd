@@ -1,0 +1,75 @@
+# clangd configuration for game_engine
+# https://clangd.llvm.org/config
+
+If:
+  PathMatch: thirdparty/.*
+Diagnostics:
+  Suppress: "*"
+  ClangTidy:
+    Remove: "*"
+
+---
+CompileFlags:
+  Add:
+    - -std=c++17
+    - -Wall
+    - -Wextra
+    - -Wpedantic
+    - -Wshadow
+    - -Wconversion
+    - -Wsign-conversion
+    - -Wnull-dereference
+    - -Wdouble-promotion
+    - -Wformat=2
+    - -Wimplicit-fallthrough
+    - -Wunused
+    - -Woverloaded-virtual
+    - -Wnon-virtual-dtor
+    - -Wold-style-cast
+    - -Wcast-align
+    - -Wno-unused-function
+    - -Wno-deprecated-declarations
+  Remove:
+    # Remove flags that clangd doesn't understand or that cause issues
+    - -W*error*
+
+Diagnostics:
+  ClangTidy:
+    Add:
+      # Core checks - catch common bugs
+      - bugprone-*
+      - misc-*
+      - performance-*
+      - readability-*
+      - modernize-*
+      - cppcoreguidelines-*
+    Remove:
+      # Too noisy or not applicable for this project
+      - modernize-use-trailing-return-type
+      - readability-magic-numbers
+      - readability-identifier-length
+      - bugprone-easily-swappable-parameters
+      - cppcoreguidelines-avoid-c-arrays
+      - cppcoreguidelines-owning-memory
+      - cppcoreguidelines-pro-bounds-array-to-pointer-decay
+      - cppcoreguidelines-pro-bounds-constant-array-index
+      - cppcoreguidelines-pro-bounds-pointer-arithmetic
+      - cppcoreguidelines-pro-type-reinterpret-cast
+      - cppcoreguidelines-pro-type-union-access
+      - cppcoreguidelines-special-member-functions
+      - misc-non-private-member-variables-in-classes
+      - misc-include-cleaner
+
+  UnusedIncludes: Strict
+
+InlayHints:
+  Enabled: Yes
+  ParameterNames: Yes
+  DeducedTypes: Yes
+  Designators: Yes
+
+Hover:
+  ShowAKA: Yes
+
+Completion:
+  AllScopes: Yes
