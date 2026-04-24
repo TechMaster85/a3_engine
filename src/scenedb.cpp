@@ -8,6 +8,7 @@
 #include "actor.h"
 #include "componentmanager.h"
 #include "documentmanager.h"
+#include "physics/collision.h"
 
 namespace {
 void addPendingActors(std::vector<std::unique_ptr<Actor>> &pendingAddedActors,
@@ -47,6 +48,9 @@ void SceneDB::loadScene(const std::string &sceneName) {
         std::remove_if(actors.begin(), actors.end(),
                        [](const auto &actor) { return !actor->dontDestroy; }),
         actors.end());
+
+        ContactQueue::collisions.clear();
+        ContactQueue::triggers.clear();
 
     const size_t numActors = actorObjects.Size();
     const size_t survivorCount = actors.size();
