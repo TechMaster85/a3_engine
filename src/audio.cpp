@@ -55,9 +55,9 @@ void Audio::play(int channel, const std::string &name, bool doesLoop) {
         exit(0);
     }
 
-    const std::string &filePath = oggExists ? filePathOgg : filePathWav;
+    const std::filesystem::path &filePath = oggExists ? filePathOgg : filePathWav;
 
-    chunkCache[name] = AudioHelper::Mix_LoadWAV(filePath.c_str());
+    chunkCache[name] = AudioHelper::Mix_LoadWAV(filePath.string().c_str());
     AudioHelper::Mix_PlayChannel(channel, chunkCache[name], loopSetting);
 }
 

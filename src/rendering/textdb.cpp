@@ -26,7 +26,7 @@ SDL_Texture *TextDB::getStringTexture(const std::string &contents, // NOLINT
             exit(0);
         }
 
-        ttfFont = TTF_OpenFont(fontPath.c_str(), fontSize);
+        ttfFont = TTF_OpenFont(fontPath.string().c_str(), fontSize);
         fontCache[fontKey] = ttfFont;
     }
 

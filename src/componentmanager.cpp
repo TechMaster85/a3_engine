@@ -23,7 +23,7 @@ luabridge::LuaRef createLuaComponent(const std::string &componentTypeName) {
             exit(0);
         }
 
-        if (luaL_dofile(ComponentManager::L, filePath.c_str()) != LUA_OK) {
+        if (luaL_dofile(ComponentManager::L, filePath.string().c_str()) != LUA_OK) {
             std::cout << "problem with lua file " + componentTypeName;
             exit(0);
         }

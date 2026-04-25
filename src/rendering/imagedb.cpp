@@ -41,7 +41,7 @@ SDL_Texture *ImageDB::get(const std::string &name) {
     }
 
     SDL_Texture *texture =
-        IMG_LoadTexture(Renderer::getRenderer(), imagePath.c_str());
+        IMG_LoadTexture(Renderer::getRenderer(), imagePath.string().c_str());
     nameToTexture[name] = texture;
     return texture;
 }
