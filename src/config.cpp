@@ -1,7 +1,7 @@
 #include "config.h"
 
 #include "documentmanager.h"
-#include "filepath.h"
+#include "core/filepath.h"
 #include "rapidjson/document.h"
 
 #include <filesystem>

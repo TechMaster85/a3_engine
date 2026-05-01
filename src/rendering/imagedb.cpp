@@ -1,6 +1,6 @@
 #include "imagedb.h"
 
-#include "filepath.h"
+#include "core/filepath.h"
 #include "renderer.h"
 
 #include <SDL_render.h>

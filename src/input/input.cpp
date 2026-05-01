@@ -1,13 +1,11 @@
 #include "input.h"
 
-#include "actor.h"
-#include "config.h"
 #include "rendering/renderer.h"
 
 #include <SDL_events.h>
-
 #include <SDL_gamecontroller.h>
 #include <SDL_scancode.h>
+
 #include <cmath>
 #include <cstdint>
 #include <string>

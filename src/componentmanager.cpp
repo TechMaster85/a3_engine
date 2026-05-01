@@ -1,7 +1,7 @@
 #include "componentmanager.h"
 
 #include "actor.h"
-#include "filepath.h"
+#include "core/filepath.h"
 #include "particles/particlesystem.h"
 #include "physics/rigidbody.h"
 

@@ -5,7 +5,7 @@
 #include <iostream>
 
 #include "AudioHelper.h"
-#include "filepath.h"
+#include "core/filepath.h"
 
 #include <SDL_mixer.h>
 

@@ -1,6 +1,6 @@
 #include "textdb.h"
 
-#include "filepath.h"
+#include "core/filepath.h"
 #include "renderer.h"
 
 #include <SDL_ttf.h>
