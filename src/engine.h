@@ -3,14 +3,14 @@
 class Engine {
 public:
     // Functions to call in main.cpp
-    void startup();
-    void loop();
+    static void startup();
+    static void loop();
 
 private:
     // Loop functions
-    void input();
-    void update();
-    void render();
+    static void input();
+    static void update();
+    static void render();
 
     static inline bool running = true;
 };

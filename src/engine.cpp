@@ -2,7 +2,7 @@
 
 #include "Helper.h"
 
-#include "audio.h"
+#include "audio/audio.h"
 #include "componentmanager.h"
 #include "config.h"
 #include "documentmanager.h"
@@ -48,7 +48,7 @@ void Engine::input() {
     SDL_Event e;
     while (Helper::SDL_PollEvent(&e) != 0) {
         if (e.type == SDL_QUIT) {
-            running = false;
+            Engine::running = false;
             break;
         }
         Input::handleEvent(e);
@@ -61,7 +61,7 @@ void Engine::loop() {
 #else
     while (running) {
 #endif
-        input();
+        Engine::input();
         SceneDB::update();
         SceneDB::lateUpdate();
         EventManager::updateSubscriptions();

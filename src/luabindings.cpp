@@ -3,7 +3,7 @@
 #include "Helper.h"
 #include "LuaBridge/detail/Namespace.h"
 #include "actor.h"
-#include "audio.h"
+#include "audio/audio.h"
 #include "box2d/b2_math.h"
 #include "core/fileutil.h"
 #include "events/eventmanager.h"
