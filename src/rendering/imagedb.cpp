@@ -1,10 +1,10 @@
 #include "imagedb.h"
 
-#include "core/filepath.h"
+#include "core/fileutil.h"
 #include "renderer.h"
 
-#include <SDL_render.h>
 #include <SDL_image.h>
+#include <SDL_render.h>
 #include <SDL_stdinc.h>
 #include <SDL_surface.h>
 
@@ -34,7 +34,7 @@ SDL_Texture *ImageDB::get(const std::string &name) {
         return it->second;
     }
 
-    const std::filesystem::path imagePath = getImagePath(name);
+    const std::filesystem::path imagePath = FileUtil::getImagePath(name);
     if (!std::filesystem::exists(imagePath)) {
         std::cout << "error: missing image " << name;
         exit(1);

@@ -1,6 +1,6 @@
 #include "textdb.h"
 
-#include "core/filepath.h"
+#include "core/fileutil.h"
 #include "renderer.h"
 
 #include <SDL_ttf.h>
@@ -20,7 +20,7 @@ SDL_Texture *TextDB::getStringTexture(const std::string &contents, // NOLINT
     if (fontIt != fontCache.end()) {
         ttfFont = fontIt->second;
     } else {
-        const std::filesystem::path fontPath = getFontPath(fontName);
+        const std::filesystem::path fontPath = FileUtil::getFontPath(fontName);
         if (!std::filesystem::exists(fontPath)) {
             std::cout << "error: font " << fontName << " missing";
             exit(1);

@@ -4,4 +4,6 @@
 
 #include <filesystem>
 
-rapidjson::Document loadJsonFile(const std::filesystem::path& path);
+namespace JsonUtil {
+rapidjson::Document loadJsonFile(const std::filesystem::path &path);
+}

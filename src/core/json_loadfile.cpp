@@ -5,7 +5,7 @@
 #include <rapidjson/filereadstream.h>
 #include <rapidjson/document.h>
 
-rapidjson::Document loadJsonFile(const std::filesystem::path& path) {
+rapidjson::Document JsonUtil::loadJsonFile(const std::filesystem::path& path) {
     const int MAX_BUFFER = 65536;
     FILE *file_pointer = nullptr;
 #ifdef _WIN32

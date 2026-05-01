@@ -5,7 +5,7 @@
 #include <iostream>
 
 #include "AudioHelper.h"
-#include "core/filepath.h"
+#include "core/fileutil.h"
 
 #include <SDL_mixer.h>
 
@@ -45,8 +45,8 @@ void Audio::play(int channel, const std::string &name, bool doesLoop) {
         return;
     }
 
-    const std::filesystem::path filePathOgg = getAudioOggPath(name);
-    const std::filesystem::path filePathWav = getAudioWavPath(name);
+    const std::filesystem::path filePathOgg = FileUtil::getAudioOggPath(name);
+    const std::filesystem::path filePathWav = FileUtil::getAudioWavPath(name);
     const bool oggExists = std::filesystem::exists(filePathOgg);
     const bool wavExists = std::filesystem::exists(filePathWav);
 
@@ -55,7 +55,8 @@ void Audio::play(int channel, const std::string &name, bool doesLoop) {
         exit(1);
     }
 
-    const std::filesystem::path &filePath = oggExists ? filePathOgg : filePathWav;
+    const std::filesystem::path &filePath =
+        oggExists ? filePathOgg : filePathWav;
 
     chunkCache[name] = AudioHelper::Mix_LoadWAV(filePath.string().c_str());
     AudioHelper::Mix_PlayChannel(channel, chunkCache[name], loopSetting);

@@ -5,7 +5,7 @@
 #include "actor.h"
 #include "audio.h"
 #include "box2d/b2_math.h"
-#include "core/filepath.h"
+#include "core/fileutil.h"
 #include "events/eventmanager.h"
 #include "input/input.h"
 #include "particles/particlesystem.h"
@@ -65,7 +65,8 @@ b2Vec2 mul(const b2Vec2 *self, float s) { return {self->x * s, self->y * s}; }
 LuaBindings::LuaBindings(lua_State *L) {
     state = L;
 
-    luabridge::setGlobal(L, RESOURCES_PATH.string(), "resources_directory");
+    luabridge::setGlobal(L, FileUtil::RESOURCES_PATH.string(),
+                         "resources_directory");
 
     luabridge::getGlobalNamespace(L)
         .beginClass<glm::vec2>("vec2")

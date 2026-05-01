@@ -2,6 +2,8 @@
 
 #include <filesystem>
 
+namespace FileUtil {
+
 #ifdef __SWITCH__
 const std::filesystem::path RESOURCES_PATH = "romfs:/";
 #else
@@ -39,4 +41,6 @@ inline std::filesystem::path getImagePath(const std::string &name) {
 }
 inline std::filesystem::path getScenePath(const std::string &name) {
     return SCENES_PATH / (name + ".scene");
+}
+
 }

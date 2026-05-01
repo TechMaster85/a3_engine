@@ -1,7 +1,7 @@
 #include "componentmanager.h"
 
 #include "actor.h"
-#include "core/filepath.h"
+#include "core/fileutil.h"
 #include "particles/particlesystem.h"
 #include "physics/rigidbody.h"
 
@@ -16,7 +16,7 @@ luabridge::LuaRef createLuaComponent(const std::string &componentTypeName) {
 
     if (typeTable.isNil()) {
         const std::filesystem::path filePath =
-            getComponentPath(componentTypeName);
+            FileUtil::getComponentPath(componentTypeName);
         if (!std::filesystem::exists(filePath)) {
             std::cout << "error: failed to locate component " +
                              componentTypeName;

@@ -1,16 +1,15 @@
 #include "config.h"
 
 #include "documentmanager.h"
-#include "core/filepath.h"
+#include "core/fileutil.h"
 #include "rapidjson/document.h"
 
-#include <filesystem>
 #include <iostream>
 #include <string>
 
 Config::Config() {
-    if (!std::filesystem::exists(GAME_CONFIG_PATH)) {
-        std::cout << "error: " << GAME_CONFIG_PATH << " missing";
+    if (!std::filesystem::exists(FileUtil::GAME_CONFIG_PATH)) {
+        std::cout << "error: " << FileUtil::GAME_CONFIG_PATH << " missing";
         exit(1);
     }
 
