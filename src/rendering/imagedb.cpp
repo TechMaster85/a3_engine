@@ -37,7 +37,7 @@ SDL_Texture *ImageDB::get(const std::string &name) {
     const std::filesystem::path imagePath = getImagePath(name);
     if (!std::filesystem::exists(imagePath)) {
         std::cout << "error: missing image " << name;
-        exit(0);
+        exit(1);
     }
 
     SDL_Texture *texture =

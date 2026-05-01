@@ -23,7 +23,7 @@ SDL_Texture *TextDB::getStringTexture(const std::string &contents, // NOLINT
         const std::filesystem::path fontPath = getFontPath(fontName);
         if (!std::filesystem::exists(fontPath)) {
             std::cout << "error: font " << fontName << " missing";
-            exit(0);
+            exit(1);
         }
 
         ttfFont = TTF_OpenFont(fontPath.string().c_str(), fontSize);

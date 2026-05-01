@@ -20,12 +20,12 @@ luabridge::LuaRef createLuaComponent(const std::string &componentTypeName) {
         if (!std::filesystem::exists(filePath)) {
             std::cout << "error: failed to locate component " +
                              componentTypeName;
-            exit(0);
+            exit(1);
         }
 
         if (luaL_dofile(ComponentManager::L, filePath.string().c_str()) != LUA_OK) {
             std::cout << "problem with lua file " + componentTypeName;
-            exit(0);
+            exit(1);
         }
 
         typeTable = luabridge::getGlobal(ComponentManager::L, componentTypeName.c_str());

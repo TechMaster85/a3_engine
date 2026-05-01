@@ -11,7 +11,7 @@
 Config::Config() {
     if (!std::filesystem::exists(GAME_CONFIG_PATH)) {
         std::cout << "error: " << GAME_CONFIG_PATH << " missing";
-        exit(0);
+        exit(1);
     }
 
     const rapidjson::Document &gameConfigDocument =
@@ -29,6 +29,6 @@ Config::Config() {
 
     if (initialScene.empty()) {
         std::cout << "error: initial_scene unspecified";
-        exit(0);
+        exit(1);
     }
 }

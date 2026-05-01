@@ -88,13 +88,13 @@ public:
 		if (renderer == nullptr)
 		{
 			std::cout << "ERROR : The renderer pointer passed to Helper::SDL_RenderPresent() is a nullptr." << std::endl;
-			exit(0);
+			exit(1);
 		}
 
 		if (input_status == NOT_INITIALIZED)
 		{
 			std::cout << "ERROR : Please do not attempt to render (Helper::SDL_RenderPresent()) before you've entered the game loop (IE, begun calling Helper::SDL_PollEvent()." << std::endl;
-			exit(0);
+			exit(1);
 		}
 
 		static bool initialized = false;
@@ -189,7 +189,7 @@ public:
 			srcrect_i = { static_cast<int>(srcrect->x), static_cast<int>(srcrect->y), static_cast<int>(srcrect->w), static_cast<int>(srcrect->h) };
 			srcrect_i_ptr = &srcrect_i;
 		}
-		
+
 		if (dstrect != nullptr)
 		{
 			dstrect_i = { static_cast<int>(dstrect->x), static_cast<int>(dstrect->y), static_cast<int>(dstrect->w), static_cast<int>(dstrect->h) };
@@ -217,11 +217,11 @@ public:
 			render_logging_file << GetFrameNumber() << ":" << actor_id << ":" << actor_name;
 			if (dstrect != nullptr)
 				render_logging_file << " dstrect " << dstrect->x << " " << dstrect->y << " " << dstrect->w << " " << dstrect->h;
-			
+
 			render_logging_file << " angle " << angle;
 			if (center != nullptr)
 				render_logging_file << " center " << center->x << " " << center->y;
-			
+
 			render_logging_file << " flip " << flip << " renderscale " << x_scale << " " << y_scale << std::endl;
 		}
 	}
@@ -502,7 +502,7 @@ private:
 				else if (event_type == SDL_MOUSEWHEEL)
 				{
 					std::string mouse_wheel_movement_str;
-					std::getline(eventStream, mouse_wheel_movement_str, ','); 
+					std::getline(eventStream, mouse_wheel_movement_str, ',');
 
 					if (mouse_wheel_movement_str == "")
 						continue;

@@ -52,7 +52,7 @@ void Audio::play(int channel, const std::string &name, bool doesLoop) {
 
     if (!oggExists && !wavExists) {
         std::cout << "error: failed to play audio clip " << name;
-        exit(0);
+        exit(1);
     }
 
     const std::filesystem::path &filePath = oggExists ? filePathOgg : filePathWav;

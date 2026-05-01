@@ -27,7 +27,7 @@ void loadFile(const std::filesystem::path &path,
         rapidjson::ParseErrorCode errorCode = outDocument.GetParseError();
         std::cout << "error parsing json at [" << path << "]" << '\n';
         std::cout << "error code " << errorCode << '\n';
-        exit(0);
+        exit(1);
     }
 }
 } // namespace
@@ -40,7 +40,7 @@ const rapidjson::Document &DocumentManager::getScene(const std::string &name) {
     const std::filesystem::path scenePath = getScenePath(name);
     if (!std::filesystem::exists(scenePath)) {
         std::cout << "error: scene " << name << " is missing";
-        exit(0);
+        exit(1);
     }
 
     rapidjson::Document sceneDocument;
@@ -58,7 +58,7 @@ DocumentManager::getTemplate(const std::string &name) {
     const std::filesystem::path path = getTemplatePath(name);
     if (!std::filesystem::exists(path)) {
         std::cout << "error: template " << name << " is missing";
-        exit(0);
+        exit(1);
     }
 
     rapidjson::Document templateDocument;
@@ -75,7 +75,7 @@ const rapidjson::Document &DocumentManager::getGameConfig() {
     const std::filesystem::path path = GAME_CONFIG_PATH;
     if (!std::filesystem::exists(path)) {
         std::cout << "error: " << path << " missing";
-        exit(0);
+        exit(1);
     }
 
     loadFile(path, gameConfig);
