@@ -4,7 +4,7 @@
 #include <filesystem>
 #include <iostream>
 
-#include "AudioHelper.h"
+// #include "AudioHelper.h"
 #include "core/fileutil.h"
 
 #include <SDL_mixer.h>
@@ -30,8 +30,8 @@ Audio::Audio() {
     constexpr int SAMPLE_RATE = 48000;
     constexpr int BUFFER_SIZE = 1024;
     constexpr int NUM_CHANNELS = 50;
-    AudioHelper::Mix_OpenAudio(SAMPLE_RATE, AUDIO_S16SYS, 2, BUFFER_SIZE);
-    AudioHelper::Mix_AllocateChannels(NUM_CHANNELS);
+    Mix_OpenAudio(SAMPLE_RATE, AUDIO_S16SYS, 2, BUFFER_SIZE);
+    Mix_AllocateChannels(NUM_CHANNELS);
 };
 
 void Audio::play(int channel, const std::string &name, bool doesLoop) {
@@ -40,30 +40,28 @@ void Audio::play(int channel, const std::string &name, bool doesLoop) {
         halt(channel);
     }
 
-    if (chunkCache.count(name) > 0) {
-        AudioHelper::Mix_PlayChannel(channel, chunkCache[name], loopSetting);
+    if (chunkCache.find(name) != chunkCache.end()) {
+        Mix_PlayChannel(channel, chunkCache[name], loopSetting);
         return;
     }
 
-    const std::filesystem::path filePathOgg = FileUtil::getAudioOggPath(name);
-    const std::filesystem::path filePathWav = FileUtil::getAudioWavPath(name);
-    const bool oggExists = std::filesystem::exists(filePathOgg);
-    const bool wavExists = std::filesystem::exists(filePathWav);
+    const std::filesystem::path oggPath = FileUtil::getAudioOggPath(name);
+    const std::filesystem::path wavPath = FileUtil::getAudioWavPath(name);
+    const bool oggExists = std::filesystem::exists(oggPath);
+    const bool wavExists = std::filesystem::exists(wavPath);
 
     if (!oggExists && !wavExists) {
         std::cout << "error: failed to play audio clip " << name;
         exit(1);
     }
 
-    const std::filesystem::path &filePath =
-        oggExists ? filePathOgg : filePathWav;
-
-    chunkCache[name] = AudioHelper::Mix_LoadWAV(filePath.string().c_str());
-    AudioHelper::Mix_PlayChannel(channel, chunkCache[name], loopSetting);
+    const std::filesystem::path &path = oggExists ? oggPath : wavPath;
+    chunkCache[name] = Mix_LoadWAV(path.string().c_str());
+    Mix_PlayChannel(channel, chunkCache[name], loopSetting);
 }
 
-void Audio::halt(int channel) { AudioHelper::Mix_HaltChannel(channel); }
+void Audio::halt(int channel) { Mix_HaltChannel(channel); }
 
 void Audio::setVolume(int channel, float volume) {
-    AudioHelper::Mix_Volume(channel, static_cast<int>(volume));
+    Mix_Volume(channel, static_cast<int>(volume));
 }

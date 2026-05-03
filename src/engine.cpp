@@ -68,5 +68,7 @@ void Engine::loop() {
         Rigidbody::step();
         Renderer::update();
         SceneDB::syncPending();
+
+        ++frameNumber;
     }
 }

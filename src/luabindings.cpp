@@ -1,12 +1,12 @@
 #include "luabindings.h"
 
-#include "Helper.h"
 #include "LuaBridge/detail/Namespace.h"
 #include "actor.h"
 #include "audio/audio.h"
 #include "box2d/b2_math.h"
 #include "core/fileutil.h"
 #include "events/eventmanager.h"
+#include "engine.h"
 #include "input/input.h"
 #include "particles/particlesystem.h"
 #include "physics/raycasting.h"
@@ -37,7 +37,7 @@ void log(const luabridge::LuaRef &message) {
 namespace Application {
 void quit() { exit(0); }
 void sleep(int x) { std::this_thread::sleep_for(std::chrono::milliseconds(x)); }
-int getFrame() { return Helper::GetFrameNumber(); }
+int getFrame() { return Engine::getFrameNumber(); }
 void openUrl(const std::string &url) {
 #ifdef _WIN32
     const std::string command = "start " + url;
