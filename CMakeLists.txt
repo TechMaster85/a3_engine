@@ -90,10 +90,9 @@ file(GLOB_RECURSE ENGINE_SOURCES CONFIGURE_DEPENDS
     src/*.h
 )
 add_executable(game_engine ${ENGINE_SOURCES})
+# $<1:...> forces all multi-config generators to use the same output directory
 set_target_properties(game_engine PROPERTIES
-    RUNTIME_OUTPUT_DIRECTORY         "${CMAKE_SOURCE_DIR}"
-    RUNTIME_OUTPUT_DIRECTORY_RELEASE "${CMAKE_SOURCE_DIR}"
-    RUNTIME_OUTPUT_DIRECTORY_DEBUG   "${CMAKE_SOURCE_DIR}"
+    RUNTIME_OUTPUT_DIRECTORY "$<1:${CMAKE_SOURCE_DIR}>"
 )
 
 target_include_directories(game_engine PRIVATE src)
@@ -107,50 +106,38 @@ target_compile_definitions(game_engine PRIVATE
     _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS
 )
 
+include(CheckIPOSupported)
+check_ipo_supported(RESULT _ipo_supported LANGUAGES CXX)
+if(_ipo_supported)
+  set_target_properties(game_engine PROPERTIES INTERPROCEDURAL_OPTIMIZATION_RELEASE TRUE)
+endif()
+
 if(MSVC)
   target_compile_options(game_engine PRIVATE
-        /W4
-        $<$<CONFIG:Release>:/Ox /arch:AVX2>
-    )
-  target_link_options(game_engine PRIVATE
-        $<$<CONFIG:Release>:/LTCG /PROFILE>
-    )
+      /W4
+      $<$<CONFIG:Release>:/Ox /arch:AVX2>
+  )
 else()
-  target_compile_options(game_engine PRIVATE
-        -Wall -Wextra -Werror
-        -Wno-deprecated-declarations
-        -Wno-unused-function
-    )
-  if(APPLE)
-    target_compile_options(game_engine PRIVATE -Wno-nontrivial-memcall)
-  elseif(NINTENDO_SWITCH)
-    target_compile_options(game_engine PRIVATE -Wno-template-body)
+  if(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64|AMD64")
+    set(_x86_64 TRUE)
   endif()
   target_compile_options(game_engine PRIVATE
-        $<$<CONFIG:Release>:-O3>
-        $<$<AND:$<CONFIG:Release>,$<CXX_COMPILER_ID:Clang,AppleClang>>:-flto=full>
-        $<$<AND:$<CONFIG:Release>,$<CXX_COMPILER_ID:GNU>>:-flto>
-        $<$<CONFIG:Release>:-g3>
-        $<$<CONFIG:Debug>:-g3>
-        $<$<CONFIG:Debug>:-fsanitize=undefined>
-        $<$<CONFIG:Debug>:-pg>
-    )
+      -Wall -Wextra -Werror
+      -Wno-deprecated-declarations
+      $<$<BOOL:${APPLE}>:-Wno-nontrivial-memcall>
+      $<$<BOOL:${NINTENDO_SWITCH}>:-Wno-template-body>
+      $<$<AND:$<CONFIG:Release>,$<BOOL:${_x86_64}>>:-march=x86-64-v3>
+      $<$<CONFIG:Debug>:-fsanitize=undefined>
+  )
   target_link_options(game_engine PRIVATE
-        $<$<AND:$<CONFIG:Release>,$<CXX_COMPILER_ID:Clang,AppleClang>>:-flto=full>
-        $<$<AND:$<CONFIG:Release>,$<CXX_COMPILER_ID:GNU>>:-flto>
-        $<$<CONFIG:Debug>:-fsanitize=undefined>
-        $<$<CONFIG:Debug>:-pg>
-    )
+      $<$<CONFIG:Debug>:-fsanitize=undefined>
+  )
 endif()
 
 target_link_libraries(game_engine PRIVATE
     box2d
     lua_static
-)
-if(WIN32)
-  target_link_libraries(game_engine PRIVATE SDL2::SDL2main)
-endif()
-target_link_libraries(game_engine PRIVATE
+    $<$<BOOL:${WIN32}>:SDL2::SDL2main>
     SDL2::SDL2
     SDL2_image::SDL2_image
     SDL2_ttf::SDL2_ttf
@@ -171,9 +158,9 @@ endif()
 
 if(WIN32)
   add_custom_command(TARGET game_engine POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_directory "${sdl2_vc_SOURCE_DIR}/lib/x64" $<TARGET_FILE_DIR:game_engine>
-        COMMAND ${CMAKE_COMMAND} -E copy_directory "${sdl2_image_vc_SOURCE_DIR}/lib/x64" $<TARGET_FILE_DIR:game_engine>
-        COMMAND ${CMAKE_COMMAND} -E copy_directory "${sdl2_ttf_vc_SOURCE_DIR}/lib/x64" $<TARGET_FILE_DIR:game_engine>
-        COMMAND ${CMAKE_COMMAND} -E copy_directory "${sdl2_mixer_vc_SOURCE_DIR}/lib/x64" $<TARGET_FILE_DIR:game_engine>
-    )
+      COMMAND ${CMAKE_COMMAND} -E copy_directory "${sdl2_vc_SOURCE_DIR}/lib/x64" $<TARGET_FILE_DIR:game_engine>
+      COMMAND ${CMAKE_COMMAND} -E copy_directory "${sdl2_image_vc_SOURCE_DIR}/lib/x64" $<TARGET_FILE_DIR:game_engine>
+      COMMAND ${CMAKE_COMMAND} -E copy_directory "${sdl2_ttf_vc_SOURCE_DIR}/lib/x64" $<TARGET_FILE_DIR:game_engine>
+      COMMAND ${CMAKE_COMMAND} -E copy_directory "${sdl2_mixer_vc_SOURCE_DIR}/lib/x64" $<TARGET_FILE_DIR:game_engine>
+  )
 endif()
