@@ -117,6 +117,13 @@ if(MSVC)
       /W4
       $<$<CONFIG:Release>:/Ox /arch:AVX2>
   )
+  target_link_options(game_engine PRIVATE
+      /DELAYLOAD:SDL2.dll
+      /DELAYLOAD:SDL2_image.dll
+      /DELAYLOAD:SDL2_ttf.dll
+      /DELAYLOAD:SDL2_mixer.dll
+  )
+  target_link_libraries(game_engine PRIVATE delayimp)
 else()
   if(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64|AMD64")
     set(_x86_64 TRUE)
@@ -157,10 +164,19 @@ if(NINTENDO_SWITCH)
 endif()
 
 if(WIN32)
+  file(GLOB SDL2_DLLS
+    "${sdl2_vc_SOURCE_DIR}/lib/x64/*.dll"
+    "${sdl2_vc_SOURCE_DIR}/lib/x64/optional/*.dll"
+    "${sdl2_image_vc_SOURCE_DIR}/lib/x64/*.dll"
+    "${sdl2_image_vc_SOURCE_DIR}/lib/x64/optional/*.dll"
+    "${sdl2_ttf_vc_SOURCE_DIR}/lib/x64/*.dll"
+    "${sdl2_ttf_vc_SOURCE_DIR}/lib/x64/optional/*.dll"
+    "${sdl2_mixer_vc_SOURCE_DIR}/lib/x64/*.dll"
+    "${sdl2_mixer_vc_SOURCE_DIR}/lib/x64/optional/*.dll"
+  )
+
   add_custom_command(TARGET game_engine POST_BUILD
-      COMMAND ${CMAKE_COMMAND} -E copy_directory "${sdl2_vc_SOURCE_DIR}/lib/x64" $<TARGET_FILE_DIR:game_engine>
-      COMMAND ${CMAKE_COMMAND} -E copy_directory "${sdl2_image_vc_SOURCE_DIR}/lib/x64" $<TARGET_FILE_DIR:game_engine>
-      COMMAND ${CMAKE_COMMAND} -E copy_directory "${sdl2_ttf_vc_SOURCE_DIR}/lib/x64" $<TARGET_FILE_DIR:game_engine>
-      COMMAND ${CMAKE_COMMAND} -E copy_directory "${sdl2_mixer_vc_SOURCE_DIR}/lib/x64" $<TARGET_FILE_DIR:game_engine>
+    COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:${PROJECT_NAME}>/libs"
+    COMMAND ${CMAKE_COMMAND} -E copy ${SDL2_DLLS} "$<TARGET_FILE_DIR:${PROJECT_NAME}>/libs/"
   )
 endif()
