@@ -25,53 +25,62 @@ Three example games are available on [a2engine.org](https://a2engine.org/): *The
 
 ## Building
 
+The project uses [CMakePresets](https://cmake.org/cmake/help/latest/manual/cmake-presets.7.html) to standardize builds across platforms. Install dependencies for your target platform, then use the preset commands below.
+
 ### Linux
 
 **Ubuntu / Debian**
 ```bash
-sudo apt install cmake build-essential libsdl2-dev libsdl2-image-dev libsdl2-ttf-dev libsdl2-mixer-dev
+sudo apt install cmake ninja-build build-essential libsdl2-dev libsdl2-image-dev libsdl2-ttf-dev libsdl2-mixer-dev
 ```
 
 **Fedora**
 ```bash
-sudo dnf install cmake gcc-c++ SDL2-devel SDL2_image-devel SDL2_ttf-devel SDL2_mixer-devel
+sudo dnf install cmake ninja-build gcc-c++ SDL2-devel SDL2_image-devel SDL2_ttf-devel SDL2_mixer-devel
 ```
 
 **Arch Linux**
 ```bash
-sudo pacman -S cmake base-devel sdl2 sdl2_image sdl2_ttf sdl2_mixer
+sudo pacman -S cmake ninja base-devel sdl2 sdl2_image sdl2_ttf sdl2_mixer
 ```
 
 ```bash
-cmake -B build
-cmake --build build
+cmake --preset linux-release
+cmake --build --preset linux-release
 ./game_engine
 ```
+
+Use `linux-debug` for a build with the UndefinedBehaviorSanitizer enabled.
 
 ### macOS
 
 Requires [Homebrew](https://brew.sh/).
 
 ```bash
-brew install cmake sdl2 sdl2_image sdl2_ttf sdl2_mixer
-cmake -B build
-cmake --build build
+brew install cmake ninja sdl2 sdl2_image sdl2_ttf sdl2_mixer
+cmake --preset macos-release
+cmake --build --preset macos-release
 ./game_engine
 ```
 
+Use `macos-debug` for a build with the UndefinedBehaviorSanitizer enabled.
+
 ### Windows
 
-SDL2 libraries are fetched automatically by CMake. Requires Visual Studio 2019 or later with the **Desktop development with C++** workload. Run the following from a [Developer Command Prompt](https://learn.microsoft.com/en-us/visualstudio/ide/reference/command-prompt-powershell):
+SDL2 libraries are fetched automatically by CMake. Requires [Visual Studio 2022](https://visualstudio.microsoft.com/) with the **Desktop development with C++** workload.
 
+**Visual Studio (recommended):** Open the project folder — VS reads `CMakePresets.json` automatically and shows *Windows MSVC x64* in the configuration dropdown. Select *windows-debug* or *windows-release* from the Build menu.
+
+**Command line** (Developer Command Prompt):
 ```powershell
-cmake -B build
-cmake --build build --config Release
+cmake --preset windows-msvc
+cmake --build --preset windows-release
 game_engine.exe
 ```
 
 ### Nintendo Switch
 
-Requires the devkitPro toolchain. Follow the [Getting Started guide](https://devkitpro.org/wiki/Getting_Started) to install it, then add the `switch-dev` group and SDL2 ports:
+Requires the [devkitPro](https://devkitpro.org/) toolchain. Follow the [Getting Started guide](https://devkitpro.org/wiki/Getting_Started) to install it, then add the `switch-dev` group and SDL2 ports:
 
 ```bash
 dkp-pacman -S switch-dev switch-sdl2 switch-sdl2_image switch-sdl2_ttf switch-sdl2_mixer
@@ -92,8 +101,8 @@ export DEVKITPRO=/opt/devkitpro
 Then build:
 
 ```bash
-cmake -B build -DCMAKE_TOOLCHAIN_FILE=$DEVKITPRO/cmake/Switch.cmake
-cmake --build build
+cmake --preset switch-release
+cmake --build --preset switch-release
 ```
 
 `game_engine.nro` is placed in the project root, ready to run with a homebrew launcher or an emulator (if you can find one).

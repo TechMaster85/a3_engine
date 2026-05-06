@@ -485,3 +485,4 @@ game_engine_linux
 *.trace
 spec/
 *.elf
+CMakeUserPresets.json

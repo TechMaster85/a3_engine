@@ -1,16 +1,19 @@
 #include "engine.h"
 
-#include <cstdlib>
+int main(int argc, char *argv[]) {
+    (void)argc;
+    (void)argv;
 
 #ifdef _WIN32
-#include <windows.h>
+
 #include <filesystem>
 #include <iostream>
-#endif
+#include <windows.h>
 
-int main(int argc, char *argv[]) {
-// Searches for dll files in libs/ folder so they don't pollute main folder
-#ifdef _WIN32
+    // Windows searches for DLLs in either current directory or system folders
+    // Too many dlls next to an executable is annoying
+    // Windows has no concept of rpath like Unix, so we add the folder manually
+
     // Get the path of the executable
     wchar_t buffer[MAX_PATH];
     GetModuleFileNameW(NULL, buffer, MAX_PATH);
@@ -24,9 +27,6 @@ int main(int argc, char *argv[]) {
         std::cerr << "Failed to set DLL directory." << std::endl;
     }
 #endif
-
-    (void)argc;
-    (void)argv;
 
     Engine engine;
     engine.startup();

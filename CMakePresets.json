@@ -1,0 +1,110 @@
+{
+  "version": 3,
+  "cmakeMinimumRequired": { "major": 3, "minor": 24, "patch": 0 },
+  "configurePresets": [
+    {
+      "name": "base",
+      "hidden": true,
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "cacheVariables": {
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
+      }
+    },
+    {
+      "name": "windows-base",
+      "hidden": true,
+      "inherits": "base",
+      "generator": "Visual Studio 17 2022",
+      "architecture": "x64",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      }
+    },
+    {
+      "name": "macos-base",
+      "hidden": true,
+      "inherits": "base",
+      "generator": "Ninja",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Darwin"
+      }
+    },
+    {
+      "name": "linux-base",
+      "hidden": true,
+      "inherits": "base",
+      "generator": "Ninja",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      }
+    },
+    {
+      "name": "switch-base",
+      "hidden": true,
+      "inherits": "base",
+      "generator": "Ninja",
+      "toolchainFile": "$env{DEVKITPRO}/cmake/Switch.cmake",
+      "cacheVariables": {
+        "NINTENDO_SWITCH": "ON"
+      }
+    },
+    {
+      "name": "windows-msvc",
+      "displayName": "Windows MSVC x64",
+      "description": "Multi-config VS generator; select Debug/Release via Build Presets",
+      "inherits": "windows-base"
+    },
+    {
+      "name": "macos-debug",
+      "displayName": "macOS Debug",
+      "inherits": "macos-base",
+      "cacheVariables": { "CMAKE_BUILD_TYPE": "Debug" }
+    },
+    {
+      "name": "macos-release",
+      "displayName": "macOS Release",
+      "inherits": "macos-base",
+      "cacheVariables": { "CMAKE_BUILD_TYPE": "Release" }
+    },
+    {
+      "name": "linux-debug",
+      "displayName": "Linux Debug",
+      "inherits": "linux-base",
+      "cacheVariables": { "CMAKE_BUILD_TYPE": "Debug" }
+    },
+    {
+      "name": "linux-release",
+      "displayName": "Linux Release",
+      "inherits": "linux-base",
+      "cacheVariables": { "CMAKE_BUILD_TYPE": "Release" }
+    },
+    {
+      "name": "switch-debug",
+      "displayName": "Nintendo Switch Debug",
+      "inherits": "switch-base",
+      "cacheVariables": { "CMAKE_BUILD_TYPE": "Debug" }
+    },
+    {
+      "name": "switch-release",
+      "displayName": "Nintendo Switch Release",
+      "inherits": "switch-base",
+      "cacheVariables": { "CMAKE_BUILD_TYPE": "Release" }
+    }
+  ],
+  "buildPresets": [
+    { "name": "windows-debug",   "displayName": "Windows Debug",           "configurePreset": "windows-msvc",  "configuration": "Debug" },
+    { "name": "windows-release", "displayName": "Windows Release",         "configurePreset": "windows-msvc",  "configuration": "Release" },
+    { "name": "macos-debug",     "displayName": "macOS Debug",             "configurePreset": "macos-debug" },
+    { "name": "macos-release",   "displayName": "macOS Release",           "configurePreset": "macos-release" },
+    { "name": "linux-debug",     "displayName": "Linux Debug",             "configurePreset": "linux-debug" },
+    { "name": "linux-release",   "displayName": "Linux Release",           "configurePreset": "linux-release" },
+    { "name": "switch-debug",    "displayName": "Nintendo Switch Debug",   "configurePreset": "switch-debug" },
+    { "name": "switch-release",  "displayName": "Nintendo Switch Release", "configurePreset": "switch-release" }
+  ]
+}
