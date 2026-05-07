@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.24)
-project(game_engine VERSION 1.0 LANGUAGES CXX C)
+project(game_engine VERSION 0.1 LANGUAGES CXX C)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -7,16 +7,24 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # Make sure clangd can easily find all files no matter where build happens
-add_custom_target(copy_compile_commands ALL
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        ${CMAKE_BINARY_DIR}/compile_commands.json
-        ${CMAKE_SOURCE_DIR}/compile_commands.json
-    VERBATIM
-)
+# Visual Studio generates compile_commands.json differently; skip the copy there
+if(NOT MSVC)
+  add_custom_target(copy_compile_commands ALL
+      COMMAND ${CMAKE_COMMAND} -E copy_if_different
+          ${CMAKE_BINARY_DIR}/compile_commands.json
+          ${CMAKE_SOURCE_DIR}/compile_commands.json
+      VERBATIM
+  )
+endif()
 
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
   set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
 endif()
+
+# Keep static library archives out of the executable output directory
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY         "${CMAKE_BINARY_DIR}/lib")
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_DEBUG   "${CMAKE_BINARY_DIR}/lib")
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_RELEASE "${CMAKE_BINARY_DIR}/lib")
 
 # ---- Lua 5.4 (compiled from vendored source) ----
 file(GLOB LUA_SOURCES thirdparty/lua/*.c)
@@ -98,9 +106,9 @@ file(GLOB_RECURSE ENGINE_SOURCES CONFIGURE_DEPENDS
     src/*.h
 )
 add_executable(game_engine ${ENGINE_SOURCES})
-# $<1:...> forces all multi-config generators to use the same output directory
 set_target_properties(game_engine PROPERTIES
-    RUNTIME_OUTPUT_DIRECTORY "$<1:${CMAKE_SOURCE_DIR}>"
+    RUNTIME_OUTPUT_DIRECTORY "$<1:${CMAKE_BINARY_DIR}/bin>"
+    VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
 )
 
 target_include_directories(game_engine PRIVATE src)
@@ -183,8 +191,43 @@ if(WIN32)
     "${sdl2_mixer_vc_SOURCE_DIR}/lib/x64/optional/*.dll"
   )
 
+  file(WRITE "${CMAKE_BINARY_DIR}/clean_exe_dir.cmake" [=[
+    file(GLOB stale LIST_DIRECTORIES false "${DIR}/*.dll" "${DIR}/*.lib")
+    file(REMOVE ${stale})
+  ]=])
+
   add_custom_command(TARGET game_engine POST_BUILD
+    COMMAND ${CMAKE_COMMAND} "-DDIR=$<TARGET_FILE_DIR:${PROJECT_NAME}>"
+        -P "${CMAKE_BINARY_DIR}/clean_exe_dir.cmake"
     COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:${PROJECT_NAME}>/libs"
     COMMAND ${CMAKE_COMMAND} -E copy ${SDL2_DLLS} "$<TARGET_FILE_DIR:${PROJECT_NAME}>/libs/"
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${CMAKE_SOURCE_DIR}/resources"
+        "$<TARGET_FILE_DIR:${PROJECT_NAME}>/resources"
+    VERBATIM
   )
 endif()
+
+# ---- Install rules ----
+if(NOT WIN32)
+  install(TARGETS game_engine RUNTIME DESTINATION .)
+  install(DIRECTORY "${CMAKE_SOURCE_DIR}/resources/" DESTINATION resources)
+endif()
+
+# ---- CPack packaging ----
+set(CPACK_PACKAGE_NAME      "game_engine")
+set(CPACK_PACKAGE_VENDOR    "A3 Engine")
+set(CPACK_PACKAGE_VERSION   "${PROJECT_VERSION}")
+set(CPACK_STRIP_FILES       TRUE)
+set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}-${CMAKE_SYSTEM_NAME}")
+
+if(WIN32)
+  set(CPACK_GENERATOR "ZIP")
+  set(CPACK_INSTALLED_DIRECTORIES "${CMAKE_BINARY_DIR}/bin" ".")
+elseif(APPLE)
+  set(CPACK_GENERATOR "ZIP")
+else()
+  set(CPACK_GENERATOR "TGZ")
+endif()
+
+include(CPack)

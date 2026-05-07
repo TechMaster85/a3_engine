@@ -1,14 +1,16 @@
 #include "engine.h"
 
+#ifdef _WIN32
+#include <filesystem>
+#include <iostream>
+#include <windows.h>
+#endif
+
 int main(int argc, char *argv[]) {
     (void)argc;
     (void)argv;
 
 #ifdef _WIN32
-
-#include <filesystem>
-#include <iostream>
-#include <windows.h>
 
     // Windows searches for DLLs in either current directory or system folders
     // Too many dlls next to an executable is annoying

@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 6,
   "cmakeMinimumRequired": { "major": 3, "minor": 24, "patch": 0 },
   "configurePresets": [
     {
@@ -88,13 +88,15 @@
       "name": "switch-debug",
       "displayName": "Nintendo Switch Debug",
       "inherits": "switch-base",
-      "cacheVariables": { "CMAKE_BUILD_TYPE": "Debug" }
+      "cacheVariables": { "CMAKE_BUILD_TYPE": "Debug" },
+      "condition": { "type": "notEquals", "lhs": "$env{DEVKITPRO}", "rhs": "" }
     },
     {
       "name": "switch-release",
       "displayName": "Nintendo Switch Release",
       "inherits": "switch-base",
-      "cacheVariables": { "CMAKE_BUILD_TYPE": "Release" }
+      "cacheVariables": { "CMAKE_BUILD_TYPE": "Release" },
+      "condition": { "type": "notEquals", "lhs": "$env{DEVKITPRO}", "rhs": "" }
     }
   ],
   "buildPresets": [
@@ -104,7 +106,43 @@
     { "name": "macos-release",   "displayName": "macOS Release",           "configurePreset": "macos-release" },
     { "name": "linux-debug",     "displayName": "Linux Debug",             "configurePreset": "linux-debug" },
     { "name": "linux-release",   "displayName": "Linux Release",           "configurePreset": "linux-release" },
-    { "name": "switch-debug",    "displayName": "Nintendo Switch Debug",   "configurePreset": "switch-debug" },
-    { "name": "switch-release",  "displayName": "Nintendo Switch Release", "configurePreset": "switch-release" }
+    { "name": "switch-debug",   "displayName": "Nintendo Switch Debug",   "configurePreset": "switch-debug",   "condition": { "type": "notEquals", "lhs": "$env{DEVKITPRO}", "rhs": "" } },
+    { "name": "switch-release", "displayName": "Nintendo Switch Release", "configurePreset": "switch-release", "condition": { "type": "notEquals", "lhs": "$env{DEVKITPRO}", "rhs": "" } }
+  ],
+  "packagePresets": [
+    {
+      "name": "windows-release",
+      "displayName": "Windows Release ZIP",
+      "configurePreset": "windows-msvc",
+      "generators": ["ZIP"],
+      "configurations": ["Release"],
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      }
+    },
+    {
+      "name": "macos-release",
+      "displayName": "macOS Release ZIP",
+      "configurePreset": "macos-release",
+      "generators": ["ZIP"],
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Darwin"
+      }
+    },
+    {
+      "name": "linux-release",
+      "displayName": "Linux Release TGZ",
+      "configurePreset": "linux-release",
+      "generators": ["TGZ"],
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      }
+    }
   ]
 }
