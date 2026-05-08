@@ -46,7 +46,10 @@ void openUrl(const std::string &url) {
 #else
     const std::string command = "xdg-open " + url;
 #endif
-    std::system(command.c_str());
+    int result = std::system(command.c_str());
+    if (result == -1) {
+        return;
+    }
 }
 
 } // namespace Application
