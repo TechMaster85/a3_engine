@@ -1,6 +1,7 @@
 #include "particlesystem.h"
 
 #include "Helper.h"
+#include "core/jsonutil.h"
 
 #include "glm/common.hpp"
 #include "glm/trigonometric.hpp"
@@ -26,76 +27,40 @@ inline float mix(float start, float end, int curAge, int endAge) {
 ParticleSystemProperties
 ParticleSystemProperties::fromJson(const rapidjson::Value &json) {
     ParticleSystemProperties psp;
-    for (const auto &prop : json.GetObject()) {
-        const std::string &propName = prop.name.GetString();
-        if (propName == "x") {
-            psp.x = prop.value.GetFloat();
-        } else if (propName == "y") {
-            psp.y = prop.value.GetFloat();
-        } else if (propName == "frames_between_bursts") {
-            psp.frames_between_bursts = prop.value.GetInt();
-        } else if (propName == "burst_quantity") {
-            psp.burst_quantity = prop.value.GetInt();
-        } else if (propName == "start_scale_min") {
-            psp.start_scale_min = prop.value.GetFloat();
-        } else if (propName == "start_scale_max") {
-            psp.start_scale_max = prop.value.GetFloat();
-        } else if (propName == "rotation_min") {
-            psp.rotation_min = prop.value.GetFloat();
-        } else if (propName == "rotation_max") {
-            psp.rotation_max = prop.value.GetFloat();
-        } else if (propName == "start_color_r") {
-            psp.start_color_r = static_cast<uint8_t>(prop.value.GetInt());
-        } else if (propName == "start_color_g") {
-            psp.start_color_g = static_cast<uint8_t>(prop.value.GetInt());
-        } else if (propName == "start_color_b") {
-            psp.start_color_b = static_cast<uint8_t>(prop.value.GetInt());
-        } else if (propName == "start_color_a") {
-            psp.start_color_a = static_cast<uint8_t>(prop.value.GetInt());
-        } else if (propName == "emit_radius_min") {
-            psp.emit_radius_min = prop.value.GetFloat();
-        } else if (propName == "emit_radius_max") {
-            psp.emit_radius_max = prop.value.GetFloat();
-        } else if (propName == "emit_angle_min") {
-            psp.emit_angle_min = prop.value.GetFloat();
-        } else if (propName == "emit_angle_max") {
-            psp.emit_angle_max = prop.value.GetFloat();
-        } else if (propName == "image") {
-            psp.image = prop.value.GetString();
-        } else if (propName == "sorting_order") {
-            psp.sorting_order = prop.value.GetInt();
-        } else if (propName == "duration_frames") {
-            psp.duration_frames = prop.value.GetInt();
-        } else if (propName == "start_speed_min") {
-            psp.start_speed_min = prop.value.GetFloat();
-        } else if (propName == "start_speed_max") {
-            psp.start_speed_max = prop.value.GetFloat();
-        } else if (propName == "rotation_speed_min") {
-            psp.rotation_speed_min = prop.value.GetFloat();
-        } else if (propName == "rotation_speed_max") {
-            psp.rotation_speed_max = prop.value.GetFloat();
-        } else if (propName == "gravity_scale_x") {
-            psp.gravity_scale_x = prop.value.GetFloat();
-        } else if (propName == "gravity_scale_y") {
-            psp.gravity_scale_y = prop.value.GetFloat();
-        } else if (propName == "drag_factor") {
-            psp.drag_factor = prop.value.GetFloat();
-        } else if (propName == "angular_drag_factor") {
-            psp.angular_drag_factor = prop.value.GetFloat();
-        } else if (propName == "end_scale") {
-            psp.end_scale = prop.value.GetFloat();
-        } else if (propName == "end_color_r") {
-            psp.end_color_r = static_cast<uint8_t>(prop.value.GetInt());
-        } else if (propName == "end_color_g") {
-            psp.end_color_g = static_cast<uint8_t>(prop.value.GetInt());
-        } else if (propName == "end_color_b") {
-            psp.end_color_b = static_cast<uint8_t>(prop.value.GetInt());
-        } else if (propName == "end_color_a") {
-            psp.end_color_a = static_cast<uint8_t>(prop.value.GetInt());
-        }
-    }
+    JsonUtil::get(json, "x", psp.x);
+    JsonUtil::get(json, "y", psp.y);
+    JsonUtil::get(json, "frames_between_bursts", psp.frames_between_bursts);
+    JsonUtil::get(json, "burst_quantity", psp.burst_quantity);
+    JsonUtil::get(json, "start_scale_min", psp.start_scale_min);
+    JsonUtil::get(json, "start_scale_max", psp.start_scale_max);
+    JsonUtil::get(json, "rotation_min", psp.rotation_min);
+    JsonUtil::get(json, "rotation_max", psp.rotation_max);
+    JsonUtil::get(json, "start_color_r", psp.start_color_r);
+    JsonUtil::get(json, "start_color_g", psp.start_color_g);
+    JsonUtil::get(json, "start_color_b", psp.start_color_b);
+    JsonUtil::get(json, "start_color_a", psp.start_color_a);
+    JsonUtil::get(json, "emit_radius_min", psp.emit_radius_min);
+    JsonUtil::get(json, "emit_radius_max", psp.emit_radius_max);
+    JsonUtil::get(json, "emit_angle_min", psp.emit_angle_min);
+    JsonUtil::get(json, "emit_angle_max", psp.emit_angle_max);
+    JsonUtil::get(json, "image", psp.image);
+    JsonUtil::get(json, "sorting_order", psp.sorting_order);
+    JsonUtil::get(json, "duration_frames", psp.duration_frames);
+    JsonUtil::get(json, "start_speed_min", psp.start_speed_min);
+    JsonUtil::get(json, "start_speed_max", psp.start_speed_max);
+    JsonUtil::get(json, "rotation_speed_min", psp.rotation_speed_min);
+    JsonUtil::get(json, "rotation_speed_max", psp.rotation_speed_max);
+    JsonUtil::get(json, "gravity_scale_x", psp.gravity_scale_x);
+    JsonUtil::get(json, "gravity_scale_y", psp.gravity_scale_y);
+    JsonUtil::get(json, "drag_factor", psp.drag_factor);
+    JsonUtil::get(json, "angular_drag_factor", psp.angular_drag_factor);
+    JsonUtil::get(json, "end_scale", psp.end_scale);
+    JsonUtil::get(json, "end_color_r", psp.end_color_r);
+    JsonUtil::get(json, "end_color_g", psp.end_color_g);
+    JsonUtil::get(json, "end_color_b", psp.end_color_b);
+    JsonUtil::get(json, "end_color_a", psp.end_color_a);
     return psp;
-};
+}
 
 ParticleSystem::ParticleSystem(ParticleSystemProperties p, std::string name,
                                Actor *actor)

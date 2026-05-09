@@ -3,57 +3,35 @@
 #include "box2d/b2_circle_shape.h"
 #include "box2d/b2_fixture.h"
 #include "box2d/b2_polygon_shape.h"
+#include "core/jsonutil.h"
 #include "physics/collision.h"
 
 #include "actor.h"
 #include "physics/contact_listener.h"
 
-RigidbodyProperties RigidbodyProperties::fromJson(const rapidjson::Value &json) {
+RigidbodyProperties
+RigidbodyProperties::fromJson(const rapidjson::Value &json) {
     RigidbodyProperties rbInfo;
-    for (const auto &prop : json.GetObject()) {
-        const std::string &propName = prop.name.GetString();
-        if (propName == "x") {
-            rbInfo.x = prop.value.GetFloat();
-        } else if (propName == "y") {
-            rbInfo.y = prop.value.GetFloat();
-        } else if (propName == "body_type") {
-            rbInfo.body_type = prop.value.GetString();
-        } else if (propName == "precise") {
-            rbInfo.precise = prop.value.GetBool();
-        } else if (propName == "gravity_scale") {
-            rbInfo.gravity_scale = prop.value.GetFloat();
-        } else if (propName == "density") {
-            rbInfo.density = prop.value.GetFloat();
-        } else if (propName == "angular_friction") {
-            rbInfo.angular_friction = prop.value.GetFloat();
-        } else if (propName == "rotation") {
-            rbInfo.rotation = prop.value.GetFloat();
-        } else if (propName == "has_collider") {
-            rbInfo.has_collider = prop.value.GetBool();
-        } else if (propName == "has_trigger") {
-            rbInfo.has_trigger = prop.value.GetBool();
-        } else if (propName == "collider_type") {
-            rbInfo.collider_type = prop.value.GetString();
-        } else if (propName == "width") {
-            rbInfo.width = prop.value.GetFloat();
-        } else if (propName == "height") {
-            rbInfo.height = prop.value.GetFloat();
-        } else if (propName == "radius") {
-            rbInfo.radius = prop.value.GetFloat();
-        } else if (propName == "friction") {
-            rbInfo.friction = prop.value.GetFloat();
-        } else if (propName == "bounciness") {
-            rbInfo.bounciness = prop.value.GetFloat();
-        } else if (propName == "trigger_type") {
-            rbInfo.trigger_type = prop.value.GetString();
-        } else if (propName == "trigger_width") {
-            rbInfo.trigger_width = prop.value.GetFloat();
-        } else if (propName == "trigger_height") {
-            rbInfo.trigger_height = prop.value.GetFloat();
-        } else if (propName == "trigger_radius") {
-            rbInfo.trigger_radius = prop.value.GetFloat();
-        }
-    }
+    JsonUtil::get(json, "x", rbInfo.x);
+    JsonUtil::get(json, "y", rbInfo.y);
+    JsonUtil::get(json, "body_type", rbInfo.body_type);
+    JsonUtil::get(json, "precise", rbInfo.precise);
+    JsonUtil::get(json, "gravity_scale", rbInfo.gravity_scale);
+    JsonUtil::get(json, "density", rbInfo.density);
+    JsonUtil::get(json, "angular_friction", rbInfo.angular_friction);
+    JsonUtil::get(json, "rotation", rbInfo.rotation);
+    JsonUtil::get(json, "has_collider", rbInfo.has_collider);
+    JsonUtil::get(json, "has_trigger", rbInfo.has_trigger);
+    JsonUtil::get(json, "collider_type", rbInfo.collider_type);
+    JsonUtil::get(json, "width", rbInfo.width);
+    JsonUtil::get(json, "height", rbInfo.height);
+    JsonUtil::get(json, "radius", rbInfo.radius);
+    JsonUtil::get(json, "friction", rbInfo.friction);
+    JsonUtil::get(json, "bounciness", rbInfo.bounciness);
+    JsonUtil::get(json, "trigger_type", rbInfo.trigger_type);
+    JsonUtil::get(json, "trigger_width", rbInfo.trigger_width);
+    JsonUtil::get(json, "trigger_height", rbInfo.trigger_height);
+    JsonUtil::get(json, "trigger_radius", rbInfo.trigger_radius);
     return rbInfo;
 }
 
