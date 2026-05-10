@@ -11,10 +11,9 @@ void EventManager::publish(const std::string &eventType,
 
     auto &subscribers = subscriptions.at(eventType);
     for (const auto &sub : subscribers) {
-        try {
-            sub.function(sub.component, eventObject);
-        } catch (const luabridge::LuaException &e) {
-            std::cout << e.what() << '\n';
+        const auto result = sub.function(sub.component, eventObject);
+        if (!result) {
+            std::cout << result.message();
         }
     }
 }

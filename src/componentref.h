@@ -7,7 +7,7 @@
 #include <utility>
 
 struct ComponentRef {
-    ComponentRef(const luabridge::LuaRef &r);
+    ComponentRef(luabridge::LuaRef r);
     luabridge::LuaRef ref;
 
     bool hasOnStart = false;
@@ -29,10 +29,9 @@ struct ComponentRef {
         if (!isEnabled()) {
             return;
         }
-        try {
-            ref[functionName](ref, std::forward<Args>(args)...);
-        } catch (luabridge::LuaException &e) {
-            reportError(e.what());
+        const auto result = ref[functionName](ref, std::forward<Args>(args)...);
+        if (!result) {
+            reportError(result.message());
         }
     }
 
@@ -43,10 +42,9 @@ struct ComponentRef {
 
     // Called regardless of enabled state, as per spec.
     void callOnDestroy() const {
-        try {
-            ref["OnDestroy"](ref);
-        } catch (luabridge::LuaException &e) {
-            reportError(e.what());
+        const auto result = ref["OnDestroy"](ref);
+        if (!result) {
+            reportError(result.message());
         }
     }
 

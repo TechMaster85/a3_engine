@@ -129,8 +129,10 @@ if(_ipo_supported)
 endif()
 
 if(MSVC)
+  string(REPLACE "/EHsc" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
   target_compile_options(game_engine PRIVATE
       /W4
+      /EHs-c-
       $<$<CONFIG:Release>:/Ox /arch:AVX2>
   )
   target_link_options(game_engine PRIVATE
@@ -146,6 +148,7 @@ else()
   endif()
   target_compile_options(game_engine PRIVATE
       -Wall -Wextra -Werror
+      -fno-exceptions
       -Wno-deprecated-declarations
       $<$<BOOL:${APPLE}>:-Wno-nontrivial-memcall>
       $<$<BOOL:${NINTENDO_SWITCH}>:-Wno-template-body>

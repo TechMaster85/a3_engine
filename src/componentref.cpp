@@ -2,7 +2,9 @@
 
 #include "actor.h"
 
-ComponentRef::ComponentRef(const luabridge::LuaRef &r) : ref(r) {
+#include <utility>
+
+ComponentRef::ComponentRef(luabridge::LuaRef r) : ref(std::move(r)) {
     hasOnStart = ref["OnStart"].isFunction();
     hasOnUpdate = ref["OnUpdate"].isFunction();
     hasOnLateUpdate = ref["OnLateUpdate"].isFunction();

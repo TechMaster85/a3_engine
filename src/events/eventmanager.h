@@ -13,8 +13,8 @@ struct Subscription {
     luabridge::LuaRef component;
     luabridge::LuaRef function;
 
-    Subscription(const luabridge::LuaRef &c, const luabridge::LuaRef &f)
-        : component(c), function(f) {}
+    Subscription(luabridge::LuaRef c, luabridge::LuaRef f)
+        : component(std::move(c)), function(std::move(f)) {}
 };
 
 struct PendingChange {
@@ -22,9 +22,9 @@ struct PendingChange {
     luabridge::LuaRef component;
     luabridge::LuaRef function;
 
-    PendingChange(std::string type, const luabridge::LuaRef &c,
-                  const luabridge::LuaRef &f)
-        : eventType(std::move(type)), component(c), function(f) {}
+    PendingChange(std::string type, luabridge::LuaRef c, luabridge::LuaRef f)
+        : eventType(std::move(type)), component(std::move(c)),
+          function(std::move(f)) {}
 };
 
 class EventManager {
