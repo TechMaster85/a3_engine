@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Helper.h"
 #include "textdb.h"
 
 #include <cstdint>

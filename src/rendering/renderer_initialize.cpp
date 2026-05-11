@@ -1,6 +1,5 @@
 #include "renderer.h"
 
-#include "Helper.h"
 #include "config.h"
 #include "documentmanager.h"
 
@@ -25,12 +24,12 @@ Renderer::Renderer() {
         }
     }
 
-    SDL_Window *newWindow = Helper::SDL_CreateWindow(
+    SDL_Window *newWindow = SDL_CreateWindow(
         Config::gameTitle.c_str(), 0, 0, static_cast<int>(windowResolution.x),
         static_cast<int>(windowResolution.y), 0);
     window = newWindow;
 
-    renderer = Helper::SDL_CreateRenderer(
+    renderer = SDL_CreateRenderer(
         newWindow, -1, SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED);
 
     SDL_SetRenderDrawColor(renderer, clearColor.r, clearColor.g, clearColor.b,

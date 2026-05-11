@@ -1,6 +1,5 @@
 #include "particlesystem.h"
 
-#include "Helper.h"
 #include "core/jsonutil.h"
 
 #include "glm/common.hpp"
@@ -8,6 +7,8 @@
 #include "rendering/imagedb.h"
 #include "rendering/renderer.h"
 #include "rendering/renderqueue.h"
+
+#include <SDL_render.h>
 
 #include <algorithm>
 
@@ -75,7 +76,7 @@ ParticleSystem::ParticleSystem(ParticleSystemProperties p, std::string name,
     rotationSpeeds.reserve(RESERVE_SIZE);
     startScales.reserve(RESERVE_SIZE);
     ages.reserve(RESERVE_SIZE);
-    Helper::SDL_QueryTexture(texture, &textureWidth, &textureHeight);
+    SDL_QueryTexture(texture, nullptr, nullptr, &textureWidth, &textureHeight);
 }
 
 void ParticleSystem::onUpdate() {
@@ -115,8 +116,8 @@ void ParticleSystem::onUpdate() {
 
         ImageDrawRequest request;
         request.texture = texture;
-        request.texture_width = textureWidth;
-        request.texture_height = textureHeight;
+        request.texture_width = static_cast<float>(textureWidth);
+        request.texture_height = static_cast<float>(textureHeight);
         request.x = posX[i];
         request.y = posY[i];
         request.rotation_degrees = rotations[i];

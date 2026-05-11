@@ -266,7 +266,7 @@ public:
 
 private:
 	static inline std::unordered_map<int, std::queue<SDL_Event>> frame_to_user_input;
-	static inline InputStatus input_status = NOT_INITIALIZED;
+	static inline InputStatus input_status = INPUT_FILE_PRESENT;
 	static inline std::ofstream recording_file;
 
 	/* Do not use SDL_GetKeyboardState(), as it will not observe the input file. */

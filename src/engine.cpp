@@ -1,7 +1,5 @@
 #include "engine.h"
 
-#include "Helper.h"
-
 #include "lua/lua.hpp"
 
 #include "audio/audio.h"
@@ -50,7 +48,7 @@ void Engine::startup() {
 void Engine::input() {
     Input::resetFrame();
     SDL_Event e;
-    while (Helper::SDL_PollEvent(&e) != 0) {
+    while (SDL_PollEvent(&e) != 0) {
         if (e.type == SDL_QUIT) {
             Engine::running = false;
             break;
@@ -72,7 +70,6 @@ void Engine::loop() {
         Rigidbody::step();
         Renderer::update();
         SceneDB::syncPending();
-
         ++frameNumber;
     }
 }

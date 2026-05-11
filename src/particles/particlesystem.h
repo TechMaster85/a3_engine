@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Helper.h"
-
 #include "rapidjson/document.h"
+
+#include "core/randomengine.h"
 
 #include <cstdint>
 #include <optional>
@@ -62,8 +62,8 @@ struct ParticleSystem {
 
     int frameNumber = 0;
     SDL_Texture *texture = nullptr;
-    float textureWidth = 0.0F;
-    float textureHeight = 0.0F;
+    int textureWidth = 0;
+    int textureHeight = 0;
 
     std::queue<size_t> freeSlots;
     std::vector<float> posX;
