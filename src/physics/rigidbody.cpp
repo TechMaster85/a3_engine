@@ -1,13 +1,13 @@
 #include "rigidbody.h"
 
-#include "box2d/b2_circle_shape.h"
-#include "box2d/b2_fixture.h"
-#include "box2d/b2_polygon_shape.h"
+#include "actor.h"
 #include "core/jsonutil.h"
 #include "physics/collision.h"
-
-#include "actor.h"
 #include "physics/contact_listener.h"
+
+#include <box2d/b2_circle_shape.h>
+#include <box2d/b2_fixture.h>
+#include <box2d/b2_polygon_shape.h>
 
 #include <cmath>
 

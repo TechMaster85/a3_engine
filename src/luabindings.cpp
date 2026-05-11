@@ -1,12 +1,7 @@
 #include "luabindings.h"
 
-#include "lua/lua.hpp"
-
-#include <LuaBridge/LuaBridge.h>
-
 #include "actor.h"
 #include "audio/audio.h"
-#include "box2d/b2_math.h"
 #include "core/fileutil.h"
 #include "engine.h"
 #include "events/eventmanager.h"
@@ -16,6 +11,11 @@
 #include "physics/rigidbody.h"
 #include "rendering/renderer.h"
 #include "scenedb.h"
+
+#include <lua/lua.hpp>
+
+#include <LuaBridge/LuaBridge.h>
+#include <box2d/b2_math.h>
 
 #include <chrono>
 #include <iostream>

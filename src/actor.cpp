@@ -3,8 +3,6 @@
 #include "componentmanager.h"
 #include "documentmanager.h"
 
-#include <cassert>
-
 void Actor::build(const rapidjson::Value &actorJson) {
     if (actorJson.HasMember("template")) {
         build(DocumentManager::getTemplate(actorJson["template"].GetString()));

@@ -1,10 +1,11 @@
 #pragma once
 
+#include <glm/ext/vector_float2.hpp>
+
 #include <SDL_events.h>
 #include <SDL_gamecontroller.h>
 #include <SDL_scancode.h>
 #include <SDL_stdinc.h>
-#include "glm/ext/vector_float2.hpp"
 
 #include <array>
 #include <cstdint>

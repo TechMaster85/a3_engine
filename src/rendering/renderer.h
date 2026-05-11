@@ -2,7 +2,8 @@
 
 #include "renderqueue.h"
 
-#include "glm/ext/vector_float2.hpp"
+#include <glm/ext/vector_float2.hpp>
+
 #include <vector>
 
 struct SDL_Window;

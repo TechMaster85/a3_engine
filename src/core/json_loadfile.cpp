@@ -1,9 +1,10 @@
 #include "core/jsonutil.h"
 
+#include <rapidjson/document.h>
+#include <rapidjson/filereadstream.h>
+
 #include <filesystem>
 #include <iostream>
-#include <rapidjson/filereadstream.h>
-#include <rapidjson/document.h>
 
 rapidjson::Document JsonUtil::loadJsonFile(const std::filesystem::path& path) {
     const int MAX_BUFFER = 65536;

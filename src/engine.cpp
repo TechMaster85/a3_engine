@@ -1,7 +1,5 @@
 #include "engine.h"
 
-#include "lua/lua.hpp"
-
 #include "audio/audio.h"
 #include "componentmanager.h"
 #include "config.h"
@@ -13,6 +11,8 @@
 #include "rendering/renderer.h"
 #include "rendering/textdb.h"
 #include "scenedb.h"
+
+#include <lua/lua.hpp>
 
 #include <cassert>
 #include <iostream>

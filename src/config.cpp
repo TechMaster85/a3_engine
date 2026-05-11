@@ -1,8 +1,9 @@
 #include "config.h"
 
-#include "documentmanager.h"
 #include "core/fileutil.h"
-#include "rapidjson/document.h"
+#include "documentmanager.h"
+
+#include <rapidjson/document.h>
 
 #include <iostream>
 #include <string>

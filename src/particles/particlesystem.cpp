@@ -1,12 +1,12 @@
 #include "particlesystem.h"
 
 #include "core/jsonutil.h"
-
-#include "glm/common.hpp"
-#include "glm/trigonometric.hpp"
 #include "rendering/imagedb.h"
 #include "rendering/renderer.h"
 #include "rendering/renderqueue.h"
+
+#include <glm/common.hpp>
+#include <glm/trigonometric.hpp>
 
 #include <SDL_render.h>
 

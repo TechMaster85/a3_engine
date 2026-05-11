@@ -1,9 +1,9 @@
 #pragma once
 
+#include <SDL_ttf.h>
+
 #include <string>
 #include <unordered_map>
-
-#include <SDL_ttf.h>
 
 struct SDL_Renderer;
 struct SDL_Texture;

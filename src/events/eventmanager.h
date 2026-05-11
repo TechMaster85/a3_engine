@@ -1,8 +1,8 @@
 #pragma once
 
-#include "lua/lua.hpp"
+#include <lua/lua.hpp>
 
-#include "LuaBridge/LuaBridge.h"
+#include <LuaBridge/LuaBridge.h>
 
 #include <string>
 #include <unordered_map>

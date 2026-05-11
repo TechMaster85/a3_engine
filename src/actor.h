@@ -1,9 +1,9 @@
 #pragma once
 
 #include "componentref.h"
-
 #include "physics/collision.h"
-#include "rapidjson/document.h"
+
+#include <rapidjson/document.h>
 
 #include <map>
 #include <string>

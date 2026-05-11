@@ -1,15 +1,13 @@
 #include "scenedb.h"
 
-#include <algorithm>
-#include <cstring>
-#include <memory>
-#include <string>
-
 #include "actor.h"
-#include "componentmanager.h"
 #include "documentmanager.h"
 #include "engine.h"
 #include "physics/collision.h"
+
+#include <algorithm>
+#include <memory>
+#include <string>
 
 namespace {
 void addPendingActors(std::vector<std::unique_ptr<Actor>> &pendingAddedActors,

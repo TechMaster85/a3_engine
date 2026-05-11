@@ -1,12 +1,12 @@
 #include "audio/audio.h"
 
-#include <cassert>
-#include <filesystem>
-#include <iostream>
-
 #include "core/fileutil.h"
 
 #include <SDL_mixer.h>
+
+#include <cassert>
+#include <filesystem>
+#include <iostream>
 
 // The SDL version that devkitpro on Switch uses does not have Mix_PlayChannel
 // or Mix_LoadWAV, so this replaces the functions automatically

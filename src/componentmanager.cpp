@@ -1,13 +1,15 @@
 #include "componentmanager.h"
 
-#include "engine.h"
-
 #include "actor.h"
 #include "core/fileutil.h"
+#include "engine.h"
 #include "particles/particlesystem.h"
 #include "physics/rigidbody.h"
 
+#include <lua/lua.hpp>
+
 #include <LuaBridge/detail/LuaRef.h>
+
 #include <filesystem>
 #include <iostream>
 
