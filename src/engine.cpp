@@ -2,6 +2,8 @@
 
 #include "Helper.h"
 
+#include "lua/lua.hpp"
+
 #include "audio/audio.h"
 #include "componentmanager.h"
 #include "config.h"
@@ -28,11 +30,13 @@ void Engine::startup() {
 #endif
 
     SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMECONTROLLER);
+    L = luaL_newstate();
+    luaL_openlibs(L);
     ComponentManager();
     DocumentManager();
     Audio();
     Config();
-    LuaBindings{ComponentManager::L};
+    LuaBindings{};
     Input();
     Renderer();
     SceneDB();

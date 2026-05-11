@@ -1,12 +1,12 @@
 #pragma once
 
 #include "actor.h"
+#include "engine.h"
 #include "box2d/b2_fixture.h"
 #include "box2d/b2_math.h"
 #include "box2d/b2_world_callbacks.h"
 #include "physics/rigidbody.h"
 
-#include "luabindings.h"
 #include <algorithm>
 #include <vector>
 
@@ -79,13 +79,12 @@ public:
 };
 
 inline luabridge::LuaRef physicsRaycast(b2Vec2 pos, b2Vec2 dir, float dist) {
-    lua_State *L = LuaBindings::getState();
     if (dist <= 0.0F) {
-        return luabridge::LuaRef(L);
+        return Engine::L;
     }
 
     if (dir.LengthSquared() <= 0.0F) {
-        return luabridge::LuaRef(L);
+        return Engine::L;
     }
 
     dir.Normalize();
@@ -95,15 +94,14 @@ inline luabridge::LuaRef physicsRaycast(b2Vec2 pos, b2Vec2 dir, float dist) {
     Rigidbody::getWorld().RayCast(&callback, pos, end);
 
     if (!callback.has_hit) {
-        return luabridge::LuaRef(L);
+        return Engine::L;
     }
 
-    return luabridge::LuaRef(L, callback.hit);
+    return luabridge::LuaRef{Engine::L, callback.hit};
 }
 
 inline luabridge::LuaRef physicsRaycastAll(b2Vec2 pos, b2Vec2 dir, float dist) {
-    lua_State *L = LuaBindings::getState();
-    luabridge::LuaRef table = luabridge::newTable(L);
+    luabridge::LuaRef table = luabridge::newTable(Engine::L);
 
     if (dist <= 0.0F) {
         return table;

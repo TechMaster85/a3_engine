@@ -1,5 +1,7 @@
 #include "componentmanager.h"
 
+#include "engine.h"
+
 #include "actor.h"
 #include "core/fileutil.h"
 #include "particles/particlesystem.h"
@@ -12,7 +14,7 @@
 namespace {
 luabridge::LuaRef createLuaComponent(const std::string &componentTypeName) {
     luabridge::LuaRef typeTable =
-        luabridge::getGlobal(ComponentManager::L, componentTypeName.c_str());
+        luabridge::getGlobal(Engine::L, componentTypeName.c_str());
 
     if (typeTable.isNil()) {
         const std::filesystem::path filePath =
@@ -23,21 +25,21 @@ luabridge::LuaRef createLuaComponent(const std::string &componentTypeName) {
             exit(1);
         }
 
-        if (luaL_dofile(ComponentManager::L, filePath.string().c_str()) != LUA_OK) {
+        if (luaL_dofile(Engine::L, filePath.string().c_str()) != LUA_OK) {
             std::cout << "problem with lua file " + componentTypeName;
             exit(1);
         }
 
-        typeTable = luabridge::getGlobal(ComponentManager::L, componentTypeName.c_str());
+        typeTable = luabridge::getGlobal(Engine::L, componentTypeName.c_str());
         typeTable["__index"] = typeTable;
     }
 
-    luabridge::LuaRef newComponent = luabridge::newTable(ComponentManager::L);
+    luabridge::LuaRef newComponent = luabridge::newTable(Engine::L);
 
-    newComponent.push(ComponentManager::L);
-    typeTable.push(ComponentManager::L);
-    lua_setmetatable(ComponentManager::L, -2);
-    lua_pop(ComponentManager::L, 1);
+    newComponent.push(Engine::L);
+    typeTable.push(Engine::L);
+    lua_setmetatable(Engine::L, -2);
+    lua_pop(Engine::L, 1);
 
     return newComponent;
 }
@@ -45,23 +47,20 @@ luabridge::LuaRef createLuaComponent(const std::string &componentTypeName) {
 luabridge::LuaRef createRigidbodyComponent(const RigidbodyProperties &rbInfo,
                                            const std::string &name,
                                            Actor *actor) {
-    luabridge::LuaRef ref(ComponentManager::L, Rigidbody{rbInfo, name, actor});
+    luabridge::LuaRef ref(Engine::L, Rigidbody{rbInfo, name, actor});
     return ref;
 }
 
 luabridge::LuaRef createParticleSystemComponent(
     const ParticleSystemProperties &psp, const std::string &name,
     Actor *actor) {
-    luabridge::LuaRef ref(ComponentManager::L, ParticleSystem{psp, name, actor});
+    luabridge::LuaRef ref(Engine::L, ParticleSystem{psp, name, actor});
     return ref;
 }
 
 } // namespace
 
-ComponentManager::ComponentManager() {
-    L = luaL_newstate();
-    luaL_openlibs(L);
-}
+ComponentManager::ComponentManager() {}
 
 luabridge::LuaRef
 ComponentManager::createComponent(const std::string &type,
@@ -108,5 +107,5 @@ ComponentManager::createComponent(const std::string &type,
 }
 
 luabridge::LuaRef ComponentManager::getGlobalRef() {
-    return luabridge::LuaRef{L};
+    return luabridge::LuaRef{Engine::L};
 }

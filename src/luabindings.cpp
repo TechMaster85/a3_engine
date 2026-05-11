@@ -1,12 +1,15 @@
 #include "luabindings.h"
 
-#include "LuaBridge/detail/Namespace.h"
+#include "lua/lua.hpp"
+
+#include <LuaBridge/LuaBridge.h>
+
 #include "actor.h"
 #include "audio/audio.h"
 #include "box2d/b2_math.h"
 #include "core/fileutil.h"
-#include "events/eventmanager.h"
 #include "engine.h"
+#include "events/eventmanager.h"
 #include "input/input.h"
 #include "particles/particlesystem.h"
 #include "physics/raycasting.h"
@@ -17,10 +20,6 @@
 #include <chrono>
 #include <iostream>
 #include <thread>
-
-lua_State *LuaBindings::state = nullptr;
-
-lua_State *LuaBindings::getState() { return state; }
 
 // Namespaces not worth making extra classes for
 namespace {
@@ -65,19 +64,17 @@ b2Vec2 mul(const b2Vec2 *self, float s) { return {self->x * s, self->y * s}; }
 } // namespace Vector2Binding
 } // namespace
 
-LuaBindings::LuaBindings(lua_State *L) {
-    state = L;
-
-    luabridge::setGlobal(L, FileUtil::RESOURCES_PATH.string(),
+LuaBindings::LuaBindings() {
+    luabridge::setGlobal(Engine::L, FileUtil::RESOURCES_PATH.string(),
                          "resources_directory");
 
-    luabridge::getGlobalNamespace(L)
+    luabridge::getGlobalNamespace(Engine::L)
         .beginClass<glm::vec2>("vec2")
         .addProperty("x", &glm::vec2::x)
         .addProperty("y", &glm::vec2::y)
         .endClass();
 
-    luabridge::getGlobalNamespace(L)
+    luabridge::getGlobalNamespace(Engine::L)
         .beginClass<Actor>("Actor")
         .addFunction("GetName", &Actor::getName)
         .addFunction("GetID", &Actor::getId)
@@ -88,7 +85,7 @@ LuaBindings::LuaBindings(lua_State *L) {
         .addFunction("RemoveComponent", &Actor::removeComponent)
         .endClass();
 
-    luabridge::getGlobalNamespace(L)
+    luabridge::getGlobalNamespace(Engine::L)
         .beginNamespace("Actor")
         .addFunction("Find", &SceneDB::findActor)
         .addFunction("FindAll", &SceneDB::findAllActors)
@@ -96,12 +93,12 @@ LuaBindings::LuaBindings(lua_State *L) {
         .addFunction("Destroy", &SceneDB::destroyActor)
         .endNamespace();
 
-    luabridge::getGlobalNamespace(L)
+    luabridge::getGlobalNamespace(Engine::L)
         .beginNamespace("Debug")
         .addFunction("Log", &Debug::log)
         .endNamespace();
 
-    luabridge::getGlobalNamespace(L)
+    luabridge::getGlobalNamespace(Engine::L)
         .beginNamespace("Application")
         .addFunction("Quit", &Application::quit)
         .addFunction("Sleep", &Application::sleep)
@@ -109,7 +106,7 @@ LuaBindings::LuaBindings(lua_State *L) {
         .addFunction("OpenURL", &Application::openUrl)
         .endNamespace();
 
-    luabridge::getGlobalNamespace(L)
+    luabridge::getGlobalNamespace(Engine::L)
         .beginNamespace("Input")
         .addFunction("GetKey", &Input::getKey)
         .addFunction("GetKeyDown", &Input::getKeyDown)
@@ -123,19 +120,19 @@ LuaBindings::LuaBindings(lua_State *L) {
         .addFunction("ShowCursor", &Input::showCursor)
         .endNamespace();
 
-    luabridge::getGlobalNamespace(L)
+    luabridge::getGlobalNamespace(Engine::L)
         .beginNamespace("Text")
         .addFunction("Draw", Renderer::drawText)
         .endNamespace();
 
-    luabridge::getGlobalNamespace(L)
+    luabridge::getGlobalNamespace(Engine::L)
         .beginNamespace("Audio")
         .addFunction("Play", Audio::play)
         .addFunction("Halt", Audio::halt)
         .addFunction("SetVolume", Audio::setVolume)
         .endNamespace();
 
-    luabridge::getGlobalNamespace(L)
+    luabridge::getGlobalNamespace(Engine::L)
         .beginNamespace("Image")
         .addFunction("Draw", Renderer::draw)
         .addFunction("DrawEx", Renderer::drawEx)
@@ -144,7 +141,7 @@ LuaBindings::LuaBindings(lua_State *L) {
         .addFunction("DrawPixel", Renderer::drawPixel)
         .endNamespace();
 
-    luabridge::getGlobalNamespace(L)
+    luabridge::getGlobalNamespace(Engine::L)
         .beginNamespace("Camera")
         .addFunction("SetPosition", Renderer::setPosition)
         .addFunction("GetPositionX", Renderer::getPositionX)
@@ -153,14 +150,14 @@ LuaBindings::LuaBindings(lua_State *L) {
         .addFunction("GetZoom", Renderer::getZoom)
         .endNamespace();
 
-    luabridge::getGlobalNamespace(L)
+    luabridge::getGlobalNamespace(Engine::L)
         .beginNamespace("Scene")
         .addFunction("Load", SceneDB::load)
         .addFunction("GetCurrent", SceneDB::getCurrentScene)
         .addFunction("DontDestroy", SceneDB::dontDestroy)
         .endNamespace();
 
-    luabridge::getGlobalNamespace(L)
+    luabridge::getGlobalNamespace(Engine::L)
         .beginClass<Rigidbody>("Rigidbody")
         .addFunction("OnStart", &Rigidbody::onStart)
         .addFunction("OnDestroy", &Rigidbody::onDestroy)
@@ -218,7 +215,7 @@ LuaBindings::LuaBindings(lua_State *L) {
         .addFunction("GetRightDirection", &Rigidbody::getRightDirection)
         .endClass();
 
-    luabridge::getGlobalNamespace(L)
+    luabridge::getGlobalNamespace(Engine::L)
         .beginClass<b2Vec2>("Vector2")
         .addConstructor<void (*)(float, float)>()
         .addProperty("x", &b2Vec2::x)
@@ -230,7 +227,7 @@ LuaBindings::LuaBindings(lua_State *L) {
         .addFunction("Length", &b2Vec2::Length)
         .endClass();
 
-    luabridge::getGlobalNamespace(L)
+    luabridge::getGlobalNamespace(Engine::L)
         .beginNamespace("Vector2")
         .addFunction(
             "Distance",
@@ -240,7 +237,7 @@ LuaBindings::LuaBindings(lua_State *L) {
             static_cast<float (*)(const b2Vec2 &, const b2Vec2 &)>(&b2Dot))
         .endNamespace();
 
-    luabridge::getGlobalNamespace(L)
+    luabridge::getGlobalNamespace(Engine::L)
         .beginClass<Collision>("Collision")
         .addProperty("other", &Collision::other)
         .addProperty("point", &Collision::point)
@@ -248,7 +245,7 @@ LuaBindings::LuaBindings(lua_State *L) {
         .addProperty("normal", &Collision::normal)
         .endClass();
 
-    luabridge::getGlobalNamespace(L)
+    luabridge::getGlobalNamespace(Engine::L)
         .beginClass<HitResult>("HitResult")
         .addProperty("actor", &HitResult::actor)
         .addProperty("point", &HitResult::point)
@@ -256,20 +253,20 @@ LuaBindings::LuaBindings(lua_State *L) {
         .addProperty("is_trigger", &HitResult::is_trigger)
         .endClass();
 
-    luabridge::getGlobalNamespace(L)
+    luabridge::getGlobalNamespace(Engine::L)
         .beginNamespace("Physics")
         .addFunction("Raycast", &physicsRaycast)
         .addFunction("RaycastAll", &physicsRaycastAll)
         .endNamespace();
 
-    luabridge::getGlobalNamespace(L)
+    luabridge::getGlobalNamespace(Engine::L)
         .beginNamespace("Event")
         .addFunction("Publish", EventManager::publish)
         .addFunction("Subscribe", EventManager::subscribe)
         .addFunction("Unsubscribe", EventManager::unsubscribe)
         .endNamespace();
 
-    luabridge::getGlobalNamespace(L)
+    luabridge::getGlobalNamespace(Engine::L)
         .beginClass<ParticleSystem>("ParticleSystem")
         .addFunction("OnUpdate", &ParticleSystem::onUpdate)
         .addFunction("Stop", &ParticleSystem::stop)

@@ -1,15 +1,17 @@
 #pragma once
 
+struct lua_State;
+
 class Engine {
 public:
-    // Functions to call in main.cpp
+    static inline lua_State *L = nullptr;
+
     static void startup();
     static void loop();
 
     static int getFrameNumber() { return frameNumber; }
 
 private:
-    // Loop functions
     static void input();
     static void update();
     static void render();

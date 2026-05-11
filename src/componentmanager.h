@@ -17,5 +17,4 @@ struct ComponentManager {
                     const std::string &key);
 
     static luabridge::LuaRef getGlobalRef();
-    static inline lua_State *L;
 };
