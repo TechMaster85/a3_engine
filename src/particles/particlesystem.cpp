@@ -166,12 +166,12 @@ void ParticleSystem::burst() {
             ages.push_back(0);
         }
 
-        float radians = glm::radians(emit_angle_distribution.Sample());
-        float radius = emit_radius_distribution.Sample();
+        const float radians = glm::radians(emit_angle_distribution.Sample());
+        const float radius = emit_radius_distribution.Sample();
 
-        float cosAngle = std::cos(radians);
-        float sinAngle = std::sin(radians);
-        float speed = speed_distribution.Sample();
+        const float cosAngle = std::cos(radians);
+        const float sinAngle = std::sin(radians);
+        const float speed = speed_distribution.Sample();
 
         posX[location] = properties.x + (cosAngle * radius);
         posY[location] = properties.y + (sinAngle * radius);
@@ -179,13 +179,13 @@ void ParticleSystem::burst() {
         velX[location] = speed * cosAngle;
         velY[location] = speed * sinAngle;
 
-        float rotation = rotation_distribution.Sample();
+        const float rotation = rotation_distribution.Sample();
         rotations[location] = rotation;
 
-        float rotationSpeed = rotation_speed_distribution.Sample();
+        const float rotationSpeed = rotation_speed_distribution.Sample();
         rotationSpeeds[location] = rotationSpeed;
 
-        float startScale = scale_distribution.Sample();
+        const float startScale = scale_distribution.Sample();
         startScales[location] = startScale;
         ages[location] = 0;
     }

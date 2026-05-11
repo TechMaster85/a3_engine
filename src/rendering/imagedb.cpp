@@ -20,7 +20,7 @@ SDL_Texture *ImageDB::get(const std::string &name) {
 
         SDL_Surface *surface = SDL_CreateRGBSurfaceWithFormat(
             0, 8, 8, 32, SDL_PIXELFORMAT_RGBA8888);
-        Uint32 whiteColor = SDL_MapRGBA(surface->format, 255, 255, 255, 255);
+        const uint32_t whiteColor = SDL_MapRGBA(surface->format, 255, 255, 255, 255);
         SDL_FillRect(surface, nullptr, whiteColor);
 
         defaultParticle =

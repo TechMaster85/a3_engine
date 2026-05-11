@@ -5,6 +5,7 @@
 
 #include <SDL_blendmode.h>
 #include <SDL_render.h>
+#include <SDL_timer.h>
 
 #include <algorithm>
 #include <cassert>
@@ -95,6 +96,7 @@ void Renderer::drawPixel(float x, float y, float r, float g, float b, float a) {
 }
 
 void Renderer::update() {
+    const uint32_t frameStart = SDL_GetTicks();
     SDL_RenderClear(renderer);
     pruneQueues();
 
@@ -192,6 +194,12 @@ void Renderer::update() {
     pixelQueue.clear();
 
     SDL_RenderPresent(renderer);
+
+    constexpr uint32_t TARGET_FRAME_MS = 16;
+    const uint32_t elapsed = SDL_GetTicks() - frameStart;
+    if (elapsed < TARGET_FRAME_MS) {
+        SDL_Delay(TARGET_FRAME_MS - elapsed);
+    }
 }
 
 void Renderer::pruneQueues() {

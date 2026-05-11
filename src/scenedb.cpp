@@ -8,6 +8,7 @@
 #include "actor.h"
 #include "componentmanager.h"
 #include "documentmanager.h"
+#include "engine.h"
 #include "physics/collision.h"
 
 namespace {
@@ -49,8 +50,8 @@ void SceneDB::loadScene(const std::string &sceneName) {
                        [](const auto &actor) { return !actor->dontDestroy; }),
         actors.end());
 
-        ContactQueue::collisions.clear();
-        ContactQueue::triggers.clear();
+    ContactQueue::collisions.clear();
+    ContactQueue::triggers.clear();
 
     const size_t numActors = actorObjects.Size();
     const size_t survivorCount = actors.size();
@@ -83,8 +84,7 @@ Actor *SceneDB::findActor(const std::string &name) {
 }
 
 luabridge::LuaRef SceneDB::findAllActors(const std::string &name) {
-    luabridge::LuaRef actorsTable =
-        luabridge::newTable(ComponentManager::getGlobalRef());
+    luabridge::LuaRef actorsTable = luabridge::newTable(Engine::L);
     int actorsFound = 0;
     for (const auto &actor : actors) {
         if (actor->getName() == name && !actor->destroyed) {
@@ -129,11 +129,10 @@ void SceneDB::processDestruction() {
             actor->callOnDestroy();
         }
     }
-    actors.erase(std::remove_if(actors.begin(), actors.end(),
-                                [](const auto &actor) {
-                                    return actor->destroyed;
-                                }),
-                 actors.end());
+    actors.erase(
+        std::remove_if(actors.begin(), actors.end(),
+                       [](const auto &actor) { return actor->destroyed; }),
+        actors.end());
 }
 
 void SceneDB::loadSceneOnUpdate(const std::string &sceneName) {

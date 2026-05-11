@@ -1,6 +1,7 @@
 #include "actor.h"
 
 #include "componentmanager.h"
+#include "engine.h"
 
 #include <string>
 
@@ -14,7 +15,7 @@ luabridge::LuaRef Actor::getComponentByKey(const std::string &key) const {
     if (pendingComponents.count(key) != 0) {
         return pendingComponents.at(key).ref;
     }
-    return ComponentManager::getGlobalRef();
+    return Engine::L;
 }
 
 luabridge::LuaRef Actor::getComponent(const std::string &typeName) const {
@@ -28,12 +29,12 @@ luabridge::LuaRef Actor::getComponent(const std::string &typeName) const {
             return component.ref;
         }
     }
-    return ComponentManager::getGlobalRef();
+    return Engine::L;
 }
 
 luabridge::LuaRef Actor::getComponents(const std::string &typeName) const {
-    luabridge::LuaRef componentsTable =
-        luabridge::newTable(ComponentManager::getGlobalRef());
+    const luabridge::LuaRef componentsTable =
+        luabridge::newTable(Engine::L);
     int componentsFound = 0;
     for (const auto &[key, component] : components) {
         if (component.ref["type"] == typeName) {

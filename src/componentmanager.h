@@ -15,6 +15,4 @@ struct ComponentManager {
     createComponent(const std::string &type,
                     const rapidjson::Value &propertiesJson, Actor *actor,
                     const std::string &key);
-
-    static luabridge::LuaRef getGlobalRef();
 };

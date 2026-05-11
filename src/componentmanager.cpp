@@ -60,7 +60,7 @@ luabridge::LuaRef createParticleSystemComponent(
 
 } // namespace
 
-ComponentManager::ComponentManager() {}
+ComponentManager::ComponentManager() = default;
 
 luabridge::LuaRef
 ComponentManager::createComponent(const std::string &type,
@@ -104,8 +104,4 @@ ComponentManager::createComponent(const std::string &type,
     }
 
     return ref;
-}
-
-luabridge::LuaRef ComponentManager::getGlobalRef() {
-    return luabridge::LuaRef{Engine::L};
 }

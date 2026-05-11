@@ -101,7 +101,7 @@ inline luabridge::LuaRef physicsRaycast(b2Vec2 pos, b2Vec2 dir, float dist) {
 }
 
 inline luabridge::LuaRef physicsRaycastAll(b2Vec2 pos, b2Vec2 dir, float dist) {
-    luabridge::LuaRef table = luabridge::newTable(Engine::L);
+    const luabridge::LuaRef table = luabridge::newTable(Engine::L);
 
     if (dist <= 0.0F) {
         return table;

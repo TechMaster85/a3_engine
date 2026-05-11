@@ -108,7 +108,8 @@ void Input::resetFrame() {
     for (KeyState &k : mouseKeys) {
         setKeyToHold(k);
     }
-    scrollDelta = rightStickY * 0.15F;
+    constexpr float SCROLL_STICK_SPEED = 0.15F;
+    scrollDelta = rightStickY * SCROLL_STICK_SPEED;
 }
 
 void Input::handleEvent(SDL_Event &e) {
@@ -172,21 +173,21 @@ void Input::handleEvent(SDL_Event &e) {
 
 // View keyboard
 bool Input::getKey(const std::string &keycode) {
-    auto it = keycodeToScancode.find(keycode);
+    const auto it = keycodeToScancode.find(keycode);
     if (it == keycodeToScancode.end()) {
         return false;
     }
     return keys[it->second] == DOWN || keys[it->second] == JUST_DOWN;
 }
 bool Input::getKeyDown(const std::string &keycode) {
-    auto it = keycodeToScancode.find(keycode);
+    const auto it = keycodeToScancode.find(keycode);
     if (it == keycodeToScancode.end()) {
         return false;
     }
     return keys[it->second] == JUST_DOWN;
 }
 bool Input::getKeyUp(const std::string &keycode) {
-    auto it = keycodeToScancode.find(keycode);
+    const auto it = keycodeToScancode.find(keycode);
     if (it == keycodeToScancode.end()) {
         return false;
     }

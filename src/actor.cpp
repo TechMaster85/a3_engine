@@ -24,7 +24,7 @@ void Actor::build(const rapidjson::Value &actorJson) {
 
 void Actor::loadComponent(const std::string &key,
                           const rapidjson::Value &propertiesJson) {
-    luabridge::LuaRef ref = ComponentManager::createComponent(
+    const luabridge::LuaRef ref = ComponentManager::createComponent(
         propertiesJson["type"].GetString(), propertiesJson, this, key);
 
     components.emplace(key, ComponentRef(ref));

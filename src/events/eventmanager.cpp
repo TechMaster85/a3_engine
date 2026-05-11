@@ -4,12 +4,12 @@
 #include <iostream>
 
 void EventManager::publish(const std::string &eventType,
-                           const luabridge::LuaRef& eventObject) {
+                           const luabridge::LuaRef &eventObject) {
     if (subscriptions.count(eventType) == 0) {
         return;
     }
 
-    auto &subscribers = subscriptions.at(eventType);
+    const auto &subscribers = subscriptions.at(eventType);
     for (const auto &sub : subscribers) {
         const auto result = sub.function(sub.component, eventObject);
         if (!result) {
