@@ -9,7 +9,7 @@
 struct Actor;
 
 struct ComponentManager {
-    explicit ComponentManager();
+    explicit ComponentManager() = default;
 
     static luabridge::LuaRef
     createComponent(const std::string &type,
