@@ -1,17 +1,14 @@
 #include "renderer.h"
 
-#include <SDL_render.h>
-#include <SDL_blendmode.h>
-#include "glm/common.hpp"
-
-#include "Helper.h"
-#include "glm/fwd.hpp"
 #include "rendering/imagedb.h"
-#include "renderqueue.h"
+#include "rendering/renderqueue.h"
+
+#include <SDL_blendmode.h>
+#include <SDL_render.h>
 
 #include <algorithm>
-#include <cstdint>
 #include <cassert>
+#include <cstdint>
 
 constexpr int PIXELS_PER_UNIT = 100;
 
@@ -20,8 +17,11 @@ void Renderer::draw(const std::string &image_name, float x, float y) {
     request.texture = ImageDB::get(image_name);
     request.x = x;
     request.y = y;
-    Helper::SDL_QueryTexture(request.texture, &request.texture_width,
-                             &request.texture_height);
+    int tex_w = 0;
+    int tex_h = 0;
+    SDL_QueryTexture(request.texture, nullptr, nullptr, &tex_w, &tex_h);
+    request.texture_width = static_cast<float>(tex_w);
+    request.texture_height = static_cast<float>(tex_h);
     imageQueue.emplace_back(request);
 }
 
@@ -43,8 +43,11 @@ void Renderer::drawEx(const std::string &image_name, float x, float y,
     request.g = static_cast<uint8_t>(g);
     request.b = static_cast<uint8_t>(b);
     request.a = static_cast<uint8_t>(a);
-    Helper::SDL_QueryTexture(request.texture, &request.texture_width,
-                             &request.texture_height);
+    int tex_w = 0;
+    int tex_h = 0;
+    SDL_QueryTexture(request.texture, nullptr, nullptr, &tex_w, &tex_h);
+    request.texture_width = static_cast<float>(tex_w);
+    request.texture_height = static_cast<float>(tex_h);
     imageQueue.emplace_back(request);
 }
 
@@ -53,8 +56,11 @@ void Renderer::drawUi(const std::string &image_name, float x, float y) {
     request.texture = ImageDB::get(image_name);
     request.x = x;
     request.y = y;
-    Helper::SDL_QueryTexture(request.texture, &request.texture_width,
-                             &request.texture_height);
+    int tex_w = 0;
+    int tex_h = 0;
+    SDL_QueryTexture(request.texture, nullptr, nullptr, &tex_w, &tex_h);
+    request.texture_width = static_cast<float>(tex_w);
+    request.texture_height = static_cast<float>(tex_h);
     imageUiQueue.emplace_back(request);
 }
 
@@ -70,8 +76,11 @@ void Renderer::drawUiEx(const std::string &image_name, float x, float y,
     request.g = static_cast<uint8_t>(g);
     request.b = static_cast<uint8_t>(b);
     request.a = static_cast<uint8_t>(a);
-    Helper::SDL_QueryTexture(request.texture, &request.texture_width,
-                             &request.texture_height);
+    int tex_w = 0;
+    int tex_h = 0;
+    SDL_QueryTexture(request.texture, nullptr, nullptr, &tex_w, &tex_h);
+    request.texture_width = static_cast<float>(tex_w);
+    request.texture_height = static_cast<float>(tex_h);
     imageUiQueue.emplace_back(request);
 }
 
@@ -116,8 +125,8 @@ void Renderer::update() {
         SDL_FRect rect;
         rect.w = request.texture_width;
         rect.h = request.texture_height;
-        rect.w *= glm::abs(request.scale_x);
-        rect.h *= glm::abs(request.scale_y);
+        rect.w *= std::abs(request.scale_x);
+        rect.h *= std::abs(request.scale_y);
         rect.x = screen_x - (request.pivot_x * rect.w);
         rect.y = screen_y - (request.pivot_y * rect.h);
 
@@ -134,9 +143,9 @@ void Renderer::update() {
             flip = SDL_FLIP_VERTICAL;
         }
 
-        Helper::SDL_RenderCopyEx(0, "", renderer, request.texture, nullptr,
-                                 &rect, request.rotation_degrees, &center,
-                                 flip);
+        SDL_RenderCopyExF(renderer, request.texture, nullptr, &rect,
+                          static_cast<double>(request.rotation_degrees),
+                          &center, flip);
     }
     SDL_RenderSetScale(renderer, 1, 1);
 
@@ -149,7 +158,7 @@ void Renderer::update() {
         rect.y = request.y;
         rect.w = request.texture_width;
         rect.h = request.texture_height;
-        Helper::SDL_RenderCopy(renderer, request.texture, nullptr, &rect);
+        SDL_RenderCopyF(renderer, request.texture, nullptr, &rect);
     }
 
     for (const TextDrawRequest &request : textQueue) {
@@ -159,8 +168,12 @@ void Renderer::update() {
         SDL_FRect rect;
         rect.x = request.x;
         rect.y = request.y;
-        Helper::SDL_QueryTexture(request.texture, &rect.w, &rect.h);
-        Helper::SDL_RenderCopy(renderer, request.texture, nullptr, &rect);
+        int tex_w = 0;
+        int tex_h = 0;
+        SDL_QueryTexture(request.texture, nullptr, nullptr, &tex_w, &tex_h);
+        rect.w = static_cast<float>(tex_w);
+        rect.h = static_cast<float>(tex_h);
+        SDL_RenderCopyF(renderer, request.texture, nullptr, &rect);
     }
 
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
@@ -178,7 +191,7 @@ void Renderer::update() {
     textQueue.clear();
     pixelQueue.clear();
 
-    Helper::SDL_RenderPresent(renderer);
+    SDL_RenderPresent(renderer);
 }
 
 void Renderer::pruneQueues() {
@@ -193,10 +206,10 @@ void Renderer::pruneQueues() {
             [half_w_world, half_h_world,
              cam = cameraPosition](const ImageDrawRequest &request) {
                 const float world_w =
-                    (request.texture_width * glm::abs(request.scale_x)) /
+                    (request.texture_width * std::abs(request.scale_x)) /
                     PIXELS_PER_UNIT;
                 const float world_h =
-                    (request.texture_height * glm::abs(request.scale_y)) /
+                    (request.texture_height * std::abs(request.scale_y)) /
                     PIXELS_PER_UNIT;
 
                 // Sprite center in world space, accounting for pivot offset
@@ -209,7 +222,7 @@ void Renderer::pruneQueues() {
                 // Half-diagonal is the max distance from center to any corner
                 // at any rotation
                 const float half_diag =
-                    std::sqrt((world_w * world_w) + (world_h * world_h)) / 2.0f;
+                    std::sqrt((world_w * world_w) + (world_h * world_h)) / 2.0F;
 
                 return center_x + half_diag < cam.x - half_w_world ||
                        center_x - half_diag > cam.x + half_w_world ||

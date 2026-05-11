@@ -7,7 +7,6 @@
 #include "box2d/b2_math.h"
 #include "box2d/b2_world.h"
 #include "box2d/b2_world_callbacks.h"
-#include "glm/glm.hpp"
 
 #include "physics/collision.h"
 #include "rapidjson/document.h"

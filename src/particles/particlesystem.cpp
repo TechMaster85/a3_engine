@@ -11,6 +11,7 @@
 #include <SDL_render.h>
 
 #include <algorithm>
+#include <cmath>
 
 namespace {
 inline float mix(float start, float end, int curAge, int endAge) {
@@ -168,8 +169,8 @@ void ParticleSystem::burst() {
         float radians = glm::radians(emit_angle_distribution.Sample());
         float radius = emit_radius_distribution.Sample();
 
-        float cosAngle = glm::cos(radians);
-        float sinAngle = glm::sin(radians);
+        float cosAngle = std::cos(radians);
+        float sinAngle = std::sin(radians);
         float speed = speed_distribution.Sample();
 
         posX[location] = properties.x + (cosAngle * radius);

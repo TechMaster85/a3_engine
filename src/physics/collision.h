@@ -1,6 +1,7 @@
 #pragma once
 
 #include "box2d/b2_math.h"
+
 #include <vector>
 
 struct Actor;

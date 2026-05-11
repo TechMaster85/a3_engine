@@ -9,6 +9,8 @@
 #include "actor.h"
 #include "physics/contact_listener.h"
 
+#include <cmath>
+
 RigidbodyProperties
 RigidbodyProperties::fromJson(const rapidjson::Value &json) {
     RigidbodyProperties rbInfo;
@@ -135,7 +137,7 @@ void Rigidbody::onDestroy() {
 
 b2Vec2 Rigidbody::getPosition() const {
     if (body == nullptr) {
-        return b2Vec2(info.x, info.y);
+        return {info.x, info.y};
     }
     return body->GetPosition();
 }
@@ -195,7 +197,7 @@ void Rigidbody::setUpDirection(b2Vec2 direction) {
     }
     direction.Normalize();
     body->SetTransform(body->GetPosition(),
-                       glm::atan(direction.x, -direction.y));
+                       std::atan(-direction.y / direction.x));
 }
 
 void Rigidbody::setRightDirection(b2Vec2 direction) {
@@ -204,7 +206,7 @@ void Rigidbody::setRightDirection(b2Vec2 direction) {
     }
     direction.Normalize();
     body->SetTransform(body->GetPosition(),
-                       glm::atan(direction.x, -direction.y) - (b2_pi / 2.0F));
+                       std::atan(-direction.y / direction.x) - (b2_pi / 2.0F));
 }
 
 b2Vec2 Rigidbody::getVelocity() const {
@@ -221,18 +223,18 @@ float Rigidbody::getGravityScale() const {
 
 b2Vec2 Rigidbody::getUpDirection() const {
     if (body == nullptr) {
-        return b2Vec2(0.0F, -1.0F);
+        return {0.0F, -1.0F};
     }
     const float angle = body->GetAngle();
-    return b2Vec2(glm::sin(angle), -glm::cos(angle));
+    return b2Vec2(std::sin(angle), -std::cos(angle));
 }
 
 b2Vec2 Rigidbody::getRightDirection() const {
     if (body == nullptr) {
-        return b2Vec2(1.0F, 0.0F);
+        return {1.0F, 0.0F};
     }
     const float angle = body->GetAngle();
-    return b2Vec2(glm::cos(angle), glm::sin(angle));
+    return {std::cos(angle), std::sin(angle)};
 }
 
 void Rigidbody::step() {
