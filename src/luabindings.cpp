@@ -83,15 +83,11 @@ LuaBindings::LuaBindings() {
         .addFunction("GetComponents", &Actor::getComponents)
         .addFunction("AddComponent", &Actor::addComponent)
         .addFunction("RemoveComponent", &Actor::removeComponent)
+        .addStaticFunction("Find", &SceneDB::findActor)
+        .addStaticFunction("FindAll", &SceneDB::findAllActors)
+        .addStaticFunction("Instantiate", &SceneDB::instantiateActor)
+        .addStaticFunction("Destroy", &SceneDB::destroyActor)
         .endClass();
-
-    luabridge::getGlobalNamespace(Engine::L)
-        .beginNamespace("Actor")
-        .addFunction("Find", &SceneDB::findActor)
-        .addFunction("FindAll", &SceneDB::findAllActors)
-        .addFunction("Instantiate", &SceneDB::instantiateActor)
-        .addFunction("Destroy", &SceneDB::destroyActor)
-        .endNamespace();
 
     luabridge::getGlobalNamespace(Engine::L)
         .beginNamespace("Debug")
