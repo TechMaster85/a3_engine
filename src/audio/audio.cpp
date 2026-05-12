@@ -33,7 +33,7 @@ Audio::Audio() {
     Mix_AllocateChannels(NUM_CHANNELS);
 };
 
-void Audio::play(int channel, const std::string &name, bool doesLoop) {
+void Audio::play(int channel, const char* name, bool doesLoop) {
     const int loopSetting = doesLoop ? -1 : 0;
     if (Mix_Playing(channel) != 0) {
         halt(channel);

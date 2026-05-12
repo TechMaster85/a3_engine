@@ -121,12 +121,7 @@ LuaBindings::LuaBindings() {
         .addFunction("Draw", Renderer::drawText)
         .endNamespace();
 
-    luabridge::getGlobalNamespace(Engine::L)
-        .beginNamespace("Audio")
-        .addFunction("Play", Audio::play)
-        .addFunction("Halt", Audio::halt)
-        .addFunction("SetVolume", Audio::setVolume)
-        .endNamespace();
+    Audio::registerLuaBindings(Engine::L);
 
     luabridge::getGlobalNamespace(Engine::L)
         .beginNamespace("Image")
