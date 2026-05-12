@@ -26,19 +26,20 @@ void Engine::startup() {
 #ifdef __SWITCH__
     romfsInit();
 #endif
-
     SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMECONTROLLER);
-    L = luaL_newstate();
-    luaL_openlibs(L);
     ComponentManager();
     DocumentManager();
     Audio();
     Config();
-    LuaBindings{};
     Input();
     Renderer();
     SceneDB();
     TextDB();
+
+    L = luaL_newstate();
+    luaL_openlibs(L);
+    LuaBindings::registerAll(L);
+
     SceneDB::loadScene(Config::initialScene);
 #ifdef __SWITCH__
     Input::initializeController();

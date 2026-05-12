@@ -1,5 +1,7 @@
 #pragma once
 
-struct LuaBindings {
-    explicit LuaBindings();
+struct lua_State;
+
+namespace LuaBindings {
+    void registerAll(lua_State *L);
 };
