@@ -1,8 +1,8 @@
 #pragma once
 
-#include "actor.h"
 #include "engine.h"
-#include "physics/rigidbody.h"
+#include "rigidbody.h"
+#include "scene/actor.h"
 
 #include <box2d/b2_fixture.h>
 #include <box2d/b2_math.h>

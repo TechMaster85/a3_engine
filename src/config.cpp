@@ -1,7 +1,7 @@
 #include "config.h"
 
 #include "core/fileutil.h"
-#include "documentmanager.h"
+#include "scene/documentmanager.h"
 
 #include <rapidjson/document.h>
 

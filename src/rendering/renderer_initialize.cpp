@@ -1,7 +1,7 @@
 #include "renderer.h"
 
 #include "config.h"
-#include "documentmanager.h"
+#include "scene/documentmanager.h"
 
 Renderer::Renderer() {
     imageQueue.reserve(100000);

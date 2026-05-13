@@ -1,9 +1,9 @@
 #include "rigidbody.h"
 
-#include "actor.h"
 #include "core/jsonutil.h"
 #include "physics/collision.h"
 #include "physics/contact_listener.h"
+#include "scene/actor.h"
 
 #include <box2d/b2_circle_shape.h>
 #include <box2d/b2_fixture.h>

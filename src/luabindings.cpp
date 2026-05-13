@@ -1,6 +1,5 @@
 #include "luabindings.h"
 
-#include "actor.h"
 #include "audio/audio.h"
 #include "core/fileutil.h"
 #include "events/eventmanager.h"
@@ -9,7 +8,8 @@
 #include "physics/raycasting.h"
 #include "physics/rigidbody.h"
 #include "rendering/renderer.h"
-#include "scenedb.h"
+#include "scene/actor.h"
+#include "scene/scenedb.h"
 
 #include <lua/lua.hpp>
 
