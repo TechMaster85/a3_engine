@@ -1,7 +1,7 @@
 #include "config.h"
 
 #include "core/fileutil.h"
-#include "scene/documentmanager.h"
+#include "core/jsonutil.h"
 
 #include <rapidjson/document.h>
 
@@ -14,18 +14,10 @@ Config::Config() {
         exit(1);
     }
 
-    const rapidjson::Document &gameConfigDocument =
-        DocumentManager::getGameConfig();
-
-    for (const auto &member : gameConfigDocument.GetObject()) {
-        const std::string_view key = member.name.GetString();
-
-        if (key == "game_title") {
-            gameTitle = member.value.GetString();
-        } else if (key == "initial_scene") {
-            initialScene = member.value.GetString();
-        }
-    }
+    const rapidjson::Document gameConfigDocument =
+        JsonUtil::loadJsonFile(FileUtil::GAME_CONFIG_PATH);
+    JsonUtil::get(gameConfigDocument, "game_title", gameTitle);
+    JsonUtil::get(gameConfigDocument, "initial_scene", initialScene);
 
     if (initialScene.empty()) {
         std::cout << "error: initial_scene unspecified";

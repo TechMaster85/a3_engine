@@ -1,27 +1,23 @@
 #include "renderer.h"
 
 #include "config.h"
-#include "scene/documentmanager.h"
+#include "core/fileutil.h"
+#include "core/jsonutil.h"
+
+#include <filesystem>
 
 Renderer::Renderer() {
     imageQueue.reserve(100000);
 
-    const rapidjson::Document &renderingConfig =
-        DocumentManager::getRenderingConfig();
+    if (std::filesystem::exists(FileUtil::RENDERING_CONFIG_PATH)) {
+        const rapidjson::Document &renderingConfig =
+            JsonUtil::loadJsonFile(FileUtil::RENDERING_CONFIG_PATH);
 
-    for (const auto &member : renderingConfig.GetObject()) {
-        const std::string_view key = member.name.GetString();
-        if (key == "x_resolution") {
-            windowResolution.x = member.value.GetFloat();
-        } else if (key == "y_resolution") {
-            windowResolution.y = member.value.GetFloat();
-        } else if (key == "clear_color_r") {
-            clearColor.r = static_cast<Uint8>(member.value.GetInt());
-        } else if (key == "clear_color_g") {
-            clearColor.g = static_cast<Uint8>(member.value.GetInt());
-        } else if (key == "clear_color_b") {
-            clearColor.b = static_cast<Uint8>(member.value.GetInt());
-        }
+        JsonUtil::get(renderingConfig, "x_resolution", windowResolution.x);
+        JsonUtil::get(renderingConfig, "y_resolution", windowResolution.y);
+        JsonUtil::get(renderingConfig, "clear_color_r", clearColor.r);
+        JsonUtil::get(renderingConfig, "clear_color_g", clearColor.g);
+        JsonUtil::get(renderingConfig, "clear_color_b", clearColor.b);
     }
 
     SDL_Window *newWindow = SDL_CreateWindow(
