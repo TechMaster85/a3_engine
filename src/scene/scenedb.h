@@ -6,6 +6,8 @@
 #include <string>
 #include <vector>
 
+struct lua_State;
+
 class SceneDB {
 private:
     static inline std::vector<std::unique_ptr<Actor>> actors;
@@ -32,4 +34,6 @@ public:
     static void syncPending();
     static void loadSceneOnUpdate(const std::string &sceneName);
     static void processDestruction();
+
+    static void createLuaBindings(lua_State *L);
 };

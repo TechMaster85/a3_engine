@@ -2,6 +2,7 @@
 
 #include "audio/audio.h"
 #include "core/fileutil.h"
+#include "engine.h"
 #include "events/eventmanager.h"
 #include "input/input.h"
 #include "particles/particlesystem.h"
@@ -16,9 +17,7 @@
 #include <LuaBridge/LuaBridge.h>
 #include <box2d/b2_math.h>
 
-#include <chrono>
 #include <iostream>
-#include <thread>
 
 // Namespaces not worth making extra classes for
 namespace {
@@ -32,30 +31,6 @@ void log(const luabridge::LuaRef &message) {
 }
 } // namespace Debug
 
-namespace Application {
-void quit() { exit(0); }
-void sleep(int x) { std::this_thread::sleep_for(std::chrono::milliseconds(x)); }
-int getFrame() { return Engine::getFrameNumber(); }
-void openUrl(const std::string &url) {
-#ifdef _WIN32
-    const std::string command = "start " + url;
-#elif defined(__APPLE__)
-    const std::string command = "open " + url;
-#else
-    const std::string command = "xdg-open " + url;
-#endif
-    int result = std::system(command.c_str());
-    if (result == -1) {
-        return;
-    }
-}
-
-} // namespace Application
-
-} // namespace
-
-// Extra bindings too cumbersome to write in the property directly
-namespace {
 namespace Vector2Binding {
 b2Vec2 add(const b2Vec2 *self, const b2Vec2 &other) { return *self + other; }
 b2Vec2 sub(const b2Vec2 *self, const b2Vec2 &other) { return *self - other; }
@@ -74,43 +49,23 @@ void LuaBindings::registerAll(lua_State *L) {
         .endClass();
 
     luabridge::getGlobalNamespace(L)
-        .beginClass<Actor>("Actor")
-        .addFunction("GetName", &Actor::getName)
-        .addFunction("GetID", &Actor::getId)
-        .addFunction("GetComponentByKey", &Actor::getComponentByKey)
-        .addFunction("GetComponent", &Actor::getComponent)
-        .addFunction("GetComponents", &Actor::getComponents)
-        .addFunction("AddComponent", &Actor::addComponent)
-        .addFunction("RemoveComponent", &Actor::removeComponent)
-        .addStaticFunction("Find", &SceneDB::findActor)
-        .addStaticFunction("FindAll", &SceneDB::findAllActors)
-        .addStaticFunction("Instantiate", &SceneDB::instantiateActor)
-        .addStaticFunction("Destroy", &SceneDB::destroyActor)
-        .endClass();
-
-    luabridge::getGlobalNamespace(L)
         .beginNamespace("Debug")
         .addFunction("Log", &Debug::log)
         .endNamespace();
 
     luabridge::getGlobalNamespace(L)
         .beginNamespace("Application")
-        .addFunction("Quit", &Application::quit)
-        .addFunction("Sleep", &Application::sleep)
-        .addFunction("GetFrame", &Application::getFrame)
-        .addFunction("OpenURL", &Application::openUrl)
+        .addFunction("Quit", []() { exit(0); })
+        .addFunction("Sleep", &Engine::sleep)
+        .addFunction("GetFrame", &Engine::getFrameNumber)
+        .addFunction("OpenURL", &Engine::openUrl)
         .endNamespace();
 
+    Actor::createLuaBindings(L);
+    SceneDB::createLuaBindings(L);
     Input::registerLuaBindings(L);
     Audio::registerLuaBindings(L);
     Renderer::registerLuaBindings(L);
-
-    luabridge::getGlobalNamespace(L)
-        .beginNamespace("Scene")
-        .addFunction("Load", SceneDB::load)
-        .addFunction("GetCurrent", SceneDB::getCurrentScene)
-        .addFunction("DontDestroy", SceneDB::dontDestroy)
-        .endNamespace();
 
     luabridge::getGlobalNamespace(L)
         .beginClass<Rigidbody>("Rigidbody")

@@ -2,6 +2,11 @@
 
 #include "componentmanager.h"
 #include "documentmanager.h"
+#include "engine.h"
+
+#include <lua/lua.hpp>
+
+#include <LuaBridge/LuaBridge.h>
 
 void Actor::build(const rapidjson::Value &actorJson) {
     if (actorJson.HasMember("template")) {
@@ -76,4 +81,66 @@ void Actor::start() {
             component.call("OnStart");
         }
     }
+}
+
+const std::string &Actor::getName() const { return name; }
+size_t Actor::getId() const { return id; }
+
+luabridge::LuaRef Actor::getComponentByKey(const std::string &key) const {
+    if (components.count(key) != 0) {
+        return components.at(key).ref;
+    }
+    if (pendingComponents.count(key) != 0) {
+        return pendingComponents.at(key).ref;
+    }
+    return Engine::L;
+}
+
+luabridge::LuaRef Actor::getComponent(const std::string &typeName) const {
+    for (const auto &[key, component] : components) {
+        if (component.ref["type"] == typeName) {
+            return component.ref;
+        }
+    }
+    for (const auto &[key, component] : pendingComponents) {
+        if (component.ref["type"] == typeName) {
+            return component.ref;
+        }
+    }
+    return Engine::L;
+}
+
+luabridge::LuaRef Actor::getComponents(const std::string &typeName) const {
+    const luabridge::LuaRef componentsTable = luabridge::newTable(Engine::L);
+    int componentsFound = 0;
+    for (const auto &[key, component] : components) {
+        if (component.ref["type"] == typeName) {
+            componentsTable[++componentsFound] = component.ref;
+        }
+    }
+    for (const auto &[key, component] : pendingComponents) {
+        if (component.ref["type"] == typeName) {
+            componentsTable[++componentsFound] = component.ref;
+        }
+    }
+    return componentsTable;
+}
+
+luabridge::LuaRef Actor::addComponent(const std::string &typeName) {
+    const size_t n = componentsAddedDuringRuntime++;
+    const std::string key = "r" + std::to_string(n);
+
+    rapidjson::Value noProperties;
+    noProperties.SetObject();
+    luabridge::LuaRef ref =
+        ComponentManager::createComponent(typeName, noProperties, this, key);
+
+    pendingComponents.emplace(key, ComponentRef(ref));
+
+    return ref;
+}
+
+void Actor::removeComponent(const luabridge::LuaRef &componentRef) {
+    const std::string &key = componentRef["key"].tostring();
+    componentsToRemoval.emplace_back(key);
 }

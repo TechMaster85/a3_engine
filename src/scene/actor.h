@@ -8,6 +8,8 @@
 #include <map>
 #include <string>
 
+struct lua_State;
+
 struct Actor {
     size_t id;
     std::string name;
@@ -43,4 +45,6 @@ struct Actor {
 
     static inline size_t nextActorId;
     static inline size_t componentsAddedDuringRuntime = 0;
+
+    static void createLuaBindings(lua_State *L);
 };

@@ -16,6 +16,7 @@
 
 #include <cassert>
 #include <iostream>
+#include <thread>
 #ifdef __SWITCH__
 #include <switch.h>
 #endif
@@ -72,5 +73,23 @@ void Engine::loop() {
         Renderer::update();
         SceneDB::syncPending();
         ++frameNumber;
+    }
+}
+
+void Engine::sleep(int x) {
+    std::this_thread::sleep_for(std::chrono::milliseconds(x));
+}
+
+void Engine::openUrl(const std::string &url) {
+#ifdef _WIN32
+    const std::string command = "start " + url;
+#elif defined(__APPLE__)
+    const std::string command = "open " + url;
+#else
+    const std::string command = "xdg-open " + url;
+#endif
+    int result = std::system(command.c_str());
+    if (result == -1) {
+        return;
     }
 }

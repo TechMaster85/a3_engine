@@ -9,10 +9,10 @@
 Renderer::Renderer() {
     imageQueue.reserve(100000);
 
+    // Renderer has default settings is rendering.config does not exist
     if (std::filesystem::exists(FileUtil::RENDERING_CONFIG_PATH)) {
         const rapidjson::Document &renderingConfig =
             JsonUtil::loadJsonFile(FileUtil::RENDERING_CONFIG_PATH);
-
         JsonUtil::get(renderingConfig, "x_resolution", windowResolution.x);
         JsonUtil::get(renderingConfig, "y_resolution", windowResolution.y);
         JsonUtil::get(renderingConfig, "clear_color_r", clearColor.r);
