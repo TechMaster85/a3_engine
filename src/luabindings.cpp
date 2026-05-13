@@ -101,19 +101,7 @@ void LuaBindings::registerAll(lua_State *L) {
         .addFunction("OpenURL", &Application::openUrl)
         .endNamespace();
 
-    luabridge::getGlobalNamespace(L)
-        .beginNamespace("Input")
-        .addFunction("GetKey", &Input::getKey)
-        .addFunction("GetKeyDown", &Input::getKeyDown)
-        .addFunction("GetKeyUp", &Input::getKeyUp)
-        .addFunction("GetMousePosition", &Input::getMousePosition)
-        .addFunction("GetMouseButton", &Input::getMouseButton)
-        .addFunction("GetMouseButtonDown", &Input::getMouseButtonDown)
-        .addFunction("GetMouseButtonUp", &Input::getMouseButtonUp)
-        .addFunction("GetMouseScrollDelta", &Input::getMouseScrollDelta)
-        .addFunction("HideCursor", &Input::hideCursor)
-        .addFunction("ShowCursor", &Input::showCursor)
-        .endNamespace();
+    Input::registerLuaBindings(L);
 
     luabridge::getGlobalNamespace(L)
         .beginNamespace("Text")
@@ -249,12 +237,7 @@ void LuaBindings::registerAll(lua_State *L) {
         .addFunction("RaycastAll", &physicsRaycastAll)
         .endNamespace();
 
-    luabridge::getGlobalNamespace(L)
-        .beginNamespace("Event")
-        .addFunction("Publish", EventManager::publish)
-        .addFunction("Subscribe", EventManager::subscribe)
-        .addFunction("Unsubscribe", EventManager::unsubscribe)
-        .endNamespace();
+    EventManager::registerLuaBindings(L);
 
     luabridge::getGlobalNamespace(L)
         .beginClass<ParticleSystem>("ParticleSystem")

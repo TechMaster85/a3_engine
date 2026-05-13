@@ -9,6 +9,8 @@
 #include <utility>
 #include <vector>
 
+struct lua_State;
+
 struct Subscription {
     luabridge::LuaRef component;
     luabridge::LuaRef function;
@@ -39,6 +41,8 @@ public:
                             const luabridge::LuaRef &function);
 
     static void updateSubscriptions();
+
+    static void registerLuaBindings(lua_State *L);
 
 private:
     static inline std::unordered_map<std::string, std::vector<Subscription>>

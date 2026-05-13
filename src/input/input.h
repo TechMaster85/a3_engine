@@ -11,6 +11,8 @@
 #include <cstdint>
 #include <string>
 
+struct lua_State;
+
 class Input {
 public:
     explicit Input() = default;
@@ -43,6 +45,9 @@ public:
 
     // Controller features
     static void initializeController();
+
+    // Lua
+    static void registerLuaBindings(lua_State *L);
 
 private:
     static inline std::array<KeyState, SDL_NUM_SCANCODES> keys;
