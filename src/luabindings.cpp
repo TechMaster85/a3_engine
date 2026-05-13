@@ -102,31 +102,8 @@ void LuaBindings::registerAll(lua_State *L) {
         .endNamespace();
 
     Input::registerLuaBindings(L);
-
-    luabridge::getGlobalNamespace(L)
-        .beginNamespace("Text")
-        .addFunction("Draw", Renderer::drawText)
-        .endNamespace();
-
     Audio::registerLuaBindings(L);
-
-    luabridge::getGlobalNamespace(L)
-        .beginNamespace("Image")
-        .addFunction("Draw", Renderer::draw)
-        .addFunction("DrawEx", Renderer::drawEx)
-        .addFunction("DrawUI", Renderer::drawUi)
-        .addFunction("DrawUIEx", Renderer::drawUiEx)
-        .addFunction("DrawPixel", Renderer::drawPixel)
-        .endNamespace();
-
-    luabridge::getGlobalNamespace(L)
-        .beginNamespace("Camera")
-        .addFunction("SetPosition", Renderer::setPosition)
-        .addFunction("GetPositionX", Renderer::getPositionX)
-        .addFunction("GetPositionY", Renderer::getPositionY)
-        .addFunction("SetZoom", Renderer::setZoom)
-        .addFunction("GetZoom", Renderer::getZoom)
-        .endNamespace();
+    Renderer::registerLuaBindings(L);
 
     luabridge::getGlobalNamespace(L)
         .beginNamespace("Scene")

@@ -6,6 +6,7 @@
 
 #include <vector>
 
+struct lua_State;
 struct SDL_Window;
 struct SDL_Renderer;
 struct SDL_Texture;
@@ -46,6 +47,9 @@ public:
     // In game loop
     static void pruneQueues();
     static void update();
+
+    // Lua
+    static void registerLuaBindings(lua_State *L);
 
 private:
     static constexpr glm::vec2 DEFAULT_RESOLUTION = {640.0F, 360.0F};
