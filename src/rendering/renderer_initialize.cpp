@@ -21,8 +21,8 @@ Renderer::Renderer() {
     }
 
     SDL_Window *newWindow = SDL_CreateWindow(
-        Config::gameTitle.c_str(), 0, 0, static_cast<int>(windowResolution.x),
-        static_cast<int>(windowResolution.y), 0);
+        Config::gameTitle.c_str(), SDL_WINDOWPOS_CENTERED,
+        SDL_WINDOWPOS_CENTERED, windowResolution.x, windowResolution.y, 0);
     window = newWindow;
 
     renderer = SDL_CreateRenderer(

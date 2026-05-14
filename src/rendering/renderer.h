@@ -3,6 +3,7 @@
 #include "renderqueue.h"
 
 #include <glm/ext/vector_float2.hpp>
+#include <glm/ext/vector_int2.hpp>
 
 #include <vector>
 
@@ -58,7 +59,7 @@ private:
     static inline SDL_Window *window = nullptr;
     static inline SDL_Renderer *renderer = nullptr;
     static inline SDL_Color clearColor = {0, 0, 0, UINT8_MAX};
-    static inline glm::vec2 windowResolution = DEFAULT_RESOLUTION;
+    static inline glm::ivec2 windowResolution = DEFAULT_RESOLUTION;
 
     // Camera info
     static inline glm::vec2 cameraPosition;
