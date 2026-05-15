@@ -33,7 +33,7 @@ list(REMOVE_ITEM LUA_SOURCES
     "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/lua/luac.c"
 )
 add_library(lua_static STATIC ${LUA_SOURCES})
-target_include_directories(lua_static PUBLIC thirdparty/lua)
+target_include_directories(lua_static SYSTEM PUBLIC thirdparty/lua)
 set_target_properties(lua_static PROPERTIES C_STANDARD 99 C_STANDARD_REQUIRED ON)
 if(NINTENDO_SWITCH)
   add_compile_definitions(LLONG_MAX=__LONG_LONG_MAX__)
@@ -150,8 +150,8 @@ else()
       -Wall -Wextra -Werror
       -fno-exceptions
       -Wno-deprecated-declarations
+      -Wno-template-body
       $<$<BOOL:${APPLE}>:-Wno-nontrivial-memcall>
-      $<$<BOOL:${NINTENDO_SWITCH}>:-Wno-template-body>
       $<$<AND:$<CONFIG:Release>,$<BOOL:${_x86_64}>>:-march=x86-64-v3>
       $<$<CONFIG:Debug>:-fsanitize=undefined>
   )
