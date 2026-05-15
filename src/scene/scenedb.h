@@ -35,5 +35,5 @@ public:
     static void loadSceneOnUpdate(const std::string &sceneName);
     static void processDestruction();
 
-    static void createLuaBindings(lua_State *L);
+    static void registerLuaBindings(lua_State *L);
 };

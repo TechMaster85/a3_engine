@@ -46,5 +46,5 @@ struct Actor {
     static inline size_t nextActorId;
     static inline size_t componentsAddedDuringRuntime = 0;
 
-    static void createLuaBindings(lua_State *L);
+    static void registerLuaBindings(lua_State *L);
 };

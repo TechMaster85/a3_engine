@@ -4,7 +4,7 @@
 
 #include <LuaBridge/LuaBridge.h>
 
-void Actor::createLuaBindings(lua_State *L) {
+void Actor::registerLuaBindings(lua_State *L) {
     luabridge::getGlobalNamespace(L)
         .beginClass<Actor>("Actor")
         .addFunction("GetName", &Actor::getName)

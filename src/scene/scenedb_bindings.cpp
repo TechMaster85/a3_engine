@@ -4,7 +4,7 @@
 
 #include <LuaBridge/LuaBridge.h>
 
-void SceneDB::createLuaBindings(lua_State *L) {
+void SceneDB::registerLuaBindings(lua_State *L) {
     luabridge::getGlobalNamespace(L)
         .beginClass<Actor>("Actor")
         .addStaticFunction("Find", &SceneDB::findActor)

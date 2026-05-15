@@ -5,6 +5,7 @@
 #include <LuaBridge/LuaBridge.h>
 
 void Renderer::registerLuaBindings(lua_State *L) {
+
     luabridge::getGlobalNamespace(L)
         .beginNamespace("Text")
         .addFunction("Draw", Renderer::drawText)

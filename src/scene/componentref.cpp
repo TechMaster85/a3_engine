@@ -1,6 +1,7 @@
 #include "componentref.h"
 
 #include "actor.h"
+#include "core/debug.h"
 
 #include <utility>
 
@@ -21,5 +22,5 @@ void ComponentRef::reportError(const std::string &error) const {
         actor = ref["actor"];
     }
     const std::string actorName = (actor != nullptr) ? actor->getName() : "?";
-    std::cout << "\033[31m" << actorName << " : " << error << "\033[0m\n";
+    Debug::runtimeError(actorName, error);
 }
