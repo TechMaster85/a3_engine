@@ -14,6 +14,7 @@
 #include <string>
 
 struct Actor;
+struct lua_State;
 
 struct RigidbodyProperties {
     float x = 0.0F;
@@ -137,4 +138,6 @@ public:
     [[nodiscard]] b2Vec2 getRightDirection() const;
 
     static void step();
+
+    static void registerLuaBindings(lua_State *L);
 };
