@@ -20,6 +20,8 @@ public:
     static int getFrameNumber() { return frameNumber; }
     static void openUrl(const std::string &url);
 
+    static void registerLuaBindings();
+
 private:
     static void input();
     static void update();
@@ -27,4 +29,5 @@ private:
 
     static inline bool running = true;
     static inline int frameNumber = 0;
+
 };

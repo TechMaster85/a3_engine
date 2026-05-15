@@ -9,6 +9,7 @@
 #include <queue>
 
 struct Actor;
+struct lua_State;
 struct SDL_Texture;
 
 struct ParticleSystemProperties {
@@ -93,6 +94,8 @@ struct ParticleSystem {
     void setStartColorG(int g) { properties.start_color_g = static_cast<uint8_t>(g); }
     [[nodiscard]] int getStartColorB() const { return properties.start_color_b; }
     void setStartColorB(int b) { properties.start_color_b = static_cast<uint8_t>(b); }
+
+    static void registerLuaBindings(lua_State *L);
 
     RandomEngine emit_angle_distribution =
         RandomEngine(properties.emit_angle_min, properties.emit_angle_max, 298);

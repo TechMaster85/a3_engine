@@ -45,38 +45,14 @@ void LuaBindings::registerAll(lua_State *L) {
         .addFunction("Log", &Debug::log)
         .endNamespace();
 
-    luabridge::getGlobalNamespace(L)
-        .beginNamespace("Application")
-        .addFunction("Quit", []() { exit(0); })
-        .addFunction("Sleep", &Engine::sleep)
-        .addFunction("GetFrame", &Engine::getFrameNumber)
-        .addFunction("OpenURL", &Engine::openUrl)
-        .endNamespace();
-
+    Engine::registerLuaBindings();  // L is part of engine already
     Actor::createLuaBindings(L);
     SceneDB::createLuaBindings(L);
     Input::registerLuaBindings(L);
     Audio::registerLuaBindings(L);
     Renderer::registerLuaBindings(L);
     Rigidbody::registerLuaBindings(L);
-
+    ParticleSystem::registerLuaBindings(L);
     EventManager::registerLuaBindings(L);
 
-    luabridge::getGlobalNamespace(L)
-        .beginClass<ParticleSystem>("ParticleSystem")
-        .addFunction("OnUpdate", &ParticleSystem::onUpdate)
-        .addFunction("Stop", &ParticleSystem::stop)
-        .addFunction("Play", &ParticleSystem::play)
-        .addFunction("Burst", &ParticleSystem::burst)
-        .addProperty("enabled", &ParticleSystem::enabled)
-        .addProperty("type", &ParticleSystem::getType)
-        .addProperty("x", &ParticleSystem::getX, &ParticleSystem::setX)
-        .addProperty("y", &ParticleSystem::getY, &ParticleSystem::setY)
-        .addProperty("start_color_r", &ParticleSystem::getStartColorR,
-                     &ParticleSystem::setStartColorR)
-        .addProperty("start_color_g", &ParticleSystem::getStartColorG,
-                     &ParticleSystem::setStartColorG)
-        .addProperty("start_color_b", &ParticleSystem::getStartColorB,
-                     &ParticleSystem::setStartColorB)
-        .endClass();
 }
