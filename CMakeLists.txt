@@ -8,7 +8,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # Make sure clangd can easily find all files no matter where build happens
 # Visual Studio generates compile_commands.json differently; skip the copy there
-if(NOT MSVC)
+if(NOT MSVC AND NOT CMAKE_GENERATOR STREQUAL "Xcode")
   add_custom_target(copy_compile_commands ALL
       COMMAND ${CMAKE_COMMAND} -E copy_if_different
           ${CMAKE_BINARY_DIR}/compile_commands.json
@@ -110,6 +110,16 @@ set_target_properties(game_engine PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "$<1:${CMAKE_BINARY_DIR}/bin>"
     VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
 )
+
+if(APPLE)
+  set_target_properties(game_engine PROPERTIES
+      MACOSX_BUNDLE TRUE
+      MACOSX_BUNDLE_BUNDLE_NAME "game_engine"
+      MACOSX_BUNDLE_BUNDLE_VERSION "${PROJECT_VERSION}"
+      MACOSX_BUNDLE_SHORT_VERSION_STRING "${PROJECT_VERSION}"
+      MACOSX_BUNDLE_GUI_IDENTIFIER "com.a3engine.game_engine"
+  )
+endif()
 
 target_include_directories(game_engine PRIVATE src)
 # SYSTEM suppresses warnings from thirdparty headers (Helper.h, LuaBridge, etc.)
@@ -221,20 +231,32 @@ if(WIN32)
   )
 endif()
 
+# On Apple the bundle layout requires resources inside Contents/Resources/;
+# everywhere else they sit next to the binary.
+if(APPLE)
+  set(_data_dir "$<TARGET_FILE_DIR:${PROJECT_NAME}>/../Resources")
+else()
+  set(_data_dir "$<TARGET_FILE_DIR:${PROJECT_NAME}>")
+endif()
+
 add_custom_command(TARGET game_engine POST_BUILD
-  COMMAND ${CMAKE_COMMAND} -E copy_directory
-      "${CMAKE_SOURCE_DIR}/resources"
-      "$<TARGET_FILE_DIR:${PROJECT_NAME}>/resources"
-  VERBATIM
-  COMMAND ${CMAKE_COMMAND} -E copy_directory
-      "${CMAKE_SOURCE_DIR}/license"
-      "$<TARGET_FILE_DIR:${PROJECT_NAME}>/license"
+  COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_SOURCE_DIR}/resources" "${_data_dir}/resources"
+  COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_SOURCE_DIR}/license" "${_data_dir}/license"
   VERBATIM
 )
 
+if(APPLE)
+  add_custom_command(TARGET game_engine POST_BUILD
+    COMMAND ${CMAKE_COMMAND}
+        "-DAPP=$<TARGET_FILE_DIR:${PROJECT_NAME}>/../.."
+        -P "${CMAKE_SOURCE_DIR}/cmake/MacOSBundleFixup.cmake"
+    VERBATIM
+  )
+endif()
+
 # ---- Install rules ----
 if(NOT WIN32)
-  install(TARGETS game_engine RUNTIME DESTINATION .)
+  install(TARGETS game_engine RUNTIME DESTINATION . BUNDLE DESTINATION .)
   install(DIRECTORY "${CMAKE_SOURCE_DIR}/resources/" DESTINATION resources)
 endif()
 

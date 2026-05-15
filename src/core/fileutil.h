@@ -6,6 +6,7 @@
 
 #ifndef __SWITCH__
 namespace {
+// Will be *.app/Contents/Resources on macOS, otherwise path of executable
 std::filesystem::path getBasePath() {
     char *basePath = SDL_GetBasePath();
     const std::filesystem::path path = basePath;

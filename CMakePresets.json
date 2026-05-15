@@ -73,6 +73,17 @@
       "cacheVariables": { "CMAKE_BUILD_TYPE": "Release" }
     },
     {
+      "name": "macos-xcode",
+      "displayName": "macOS Xcode",
+      "inherits": "base",
+      "generator": "Xcode",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Darwin"
+      }
+    },
+    {
       "name": "linux-debug",
       "displayName": "Linux Debug",
       "inherits": "linux-base",
@@ -102,8 +113,10 @@
   "buildPresets": [
     { "name": "windows-debug",   "displayName": "Windows Debug",           "configurePreset": "windows-msvc",  "configuration": "Debug" },
     { "name": "windows-release", "displayName": "Windows Release",         "configurePreset": "windows-msvc",  "configuration": "Release" },
-    { "name": "macos-debug",     "displayName": "macOS Debug",             "configurePreset": "macos-debug" },
-    { "name": "macos-release",   "displayName": "macOS Release",           "configurePreset": "macos-release" },
+    { "name": "macos-debug",        "displayName": "macOS Debug",         "configurePreset": "macos-debug" },
+    { "name": "macos-release",      "displayName": "macOS Release",       "configurePreset": "macos-release" },
+    { "name": "macos-xcode-debug",   "displayName": "macOS Xcode Debug",   "configurePreset": "macos-xcode", "configuration": "Debug" },
+    { "name": "macos-xcode-release", "displayName": "macOS Xcode Release", "configurePreset": "macos-xcode", "configuration": "Release" },
     { "name": "linux-debug",     "displayName": "Linux Debug",             "configurePreset": "linux-debug" },
     { "name": "linux-release",   "displayName": "Linux Release",           "configurePreset": "linux-release" },
     { "name": "switch-debug",   "displayName": "Nintendo Switch Debug",   "configurePreset": "switch-debug",   "condition": { "type": "notEquals", "lhs": "$env{DEVKITPRO}", "rhs": "" } },
