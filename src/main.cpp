@@ -30,9 +30,8 @@ int main(int argc, char *argv[]) {
     }
 #endif
 
-    Engine engine;
-    engine.startup();
-    engine.loop();
+    Engine::startup();
+    Engine::loop();
 
     return 0;
 }
