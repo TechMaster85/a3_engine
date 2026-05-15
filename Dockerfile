@@ -7,7 +7,9 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 RUN apt-get update && apt-get install -y \
     build-essential \
+    cmake \
     clang \
+    ninja-build \
     libsdl2-dev \
     libsdl2-image-dev \
     libsdl2-mixer-dev \
