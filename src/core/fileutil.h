@@ -1,15 +1,29 @@
 #pragma once
 
+#include <SDL_filesystem.h>
+
 #include <filesystem>
+
+#ifndef __SWITCH__
+namespace {
+std::filesystem::path getBasePath() {
+    char *basePath = SDL_GetBasePath();
+    const std::filesystem::path path = basePath;
+    SDL_free(basePath);
+    return path;
+}
+} // namespace
+#endif
 
 namespace FileUtil {
 
 #ifdef __SWITCH__
-const std::filesystem::path RESOURCES_PATH = "romfs:/";
+const std::filesystem::path BASE_PATH = "romfs:/";
 #else
-const std::filesystem::path RESOURCES_PATH = "resources/";
+const std::filesystem::path BASE_PATH = getBasePath();
 #endif
 
+const std::filesystem::path RESOURCES_PATH = BASE_PATH / "resources";
 const std::filesystem::path TEMPLATES_PATH = RESOURCES_PATH / "actor_templates";
 const std::filesystem::path AUDIO_PATH = RESOURCES_PATH / "audio";
 const std::filesystem::path COMPONENTS_PATH =
@@ -20,7 +34,6 @@ const std::filesystem::path SCENES_PATH = RESOURCES_PATH / "scenes";
 const std::filesystem::path GAME_CONFIG_PATH = RESOURCES_PATH / "game.config";
 const std::filesystem::path RENDERING_CONFIG_PATH =
     RESOURCES_PATH / "rendering.config";
-
 inline std::filesystem::path getTemplatePath(const std::string &name) {
     return TEMPLATES_PATH / (name + ".template");
 }
@@ -43,4 +56,4 @@ inline std::filesystem::path getScenePath(const std::string &name) {
     return SCENES_PATH / (name + ".scene");
 }
 
-}
+} // namespace FileUtil

@@ -150,7 +150,7 @@ else()
       -Wall -Wextra -Werror
       -fno-exceptions
       -Wno-deprecated-declarations
-      -Wno-template-body
+      $<$<NOT:$<BOOL:${APPLE}>>:-Wno-template-body>
       $<$<BOOL:${APPLE}>:-Wno-nontrivial-memcall>
       $<$<AND:$<CONFIG:Release>,$<BOOL:${_x86_64}>>:-march=x86-64-v3>
       $<$<CONFIG:Debug>:-fsanitize=undefined>
@@ -171,7 +171,20 @@ target_link_libraries(game_engine PRIVATE
 )
 
 if(NINTENDO_SWITCH)
-  nx_create_nro(game_engine ROMFS "${CMAKE_SOURCE_DIR}/resources")
+  set(ROMFS_STAGING_DIR "${CMAKE_BINARY_DIR}/romfs_staging")
+  file(MAKE_DIRECTORY "${ROMFS_STAGING_DIR}/resources")
+
+  add_custom_target(romfs_staging
+    COMMAND ${CMAKE_COMMAND} -E make_directory "${ROMFS_STAGING_DIR}/resources"
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${CMAKE_SOURCE_DIR}/resources"
+        "${ROMFS_STAGING_DIR}/resources"
+    VERBATIM
+  )
+
+  nx_create_nro(game_engine ROMFS "${ROMFS_STAGING_DIR}")
+  add_dependencies(game_engine_nro romfs_staging)
+
   add_custom_target(game_engine_deploy ALL
     COMMAND ${CMAKE_COMMAND} -E copy
         "${CMAKE_BINARY_DIR}/game_engine.nro"
@@ -204,12 +217,20 @@ if(WIN32)
         -P "${CMAKE_BINARY_DIR}/clean_exe_dir.cmake"
     COMMAND ${CMAKE_COMMAND} -E make_directory "$<TARGET_FILE_DIR:${PROJECT_NAME}>/libs"
     COMMAND ${CMAKE_COMMAND} -E copy ${SDL2_DLLS} "$<TARGET_FILE_DIR:${PROJECT_NAME}>/libs/"
-    COMMAND ${CMAKE_COMMAND} -E copy_directory
-        "${CMAKE_SOURCE_DIR}/resources"
-        "$<TARGET_FILE_DIR:${PROJECT_NAME}>/resources"
     VERBATIM
   )
 endif()
+
+add_custom_command(TARGET game_engine POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E copy_directory
+      "${CMAKE_SOURCE_DIR}/resources"
+      "$<TARGET_FILE_DIR:${PROJECT_NAME}>/resources"
+  VERBATIM
+  COMMAND ${CMAKE_COMMAND} -E copy_directory
+      "${CMAKE_SOURCE_DIR}/license"
+      "$<TARGET_FILE_DIR:${PROJECT_NAME}>/license"
+  VERBATIM
+)
 
 # ---- Install rules ----
 if(NOT WIN32)
