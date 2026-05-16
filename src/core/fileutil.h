@@ -4,7 +4,7 @@
 
 #include <filesystem>
 
-#ifndef __SWITCH__
+#if !defined(__SWITCH__) || !defined(_WIN32)
 namespace {
 // Will be *.app/Contents/Resources on macOS, otherwise path of executable
 std::filesystem::path getBasePath() {
@@ -18,7 +18,11 @@ std::filesystem::path getBasePath() {
 
 namespace FileUtil {
 
-#ifdef __SWITCH__
+#ifdef _WIN32
+// SDL loads late on Windows, so we can't call SDL_GetBasePath() at global
+// initialization time
+const std::filesystem::path BASE_PATH = std::filesystem::current_path();
+#elif defined(__SWITCH__)
 const std::filesystem::path BASE_PATH = "romfs:/";
 #else
 const std::filesystem::path BASE_PATH = getBasePath();

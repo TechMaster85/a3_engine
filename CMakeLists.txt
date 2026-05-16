@@ -128,10 +128,6 @@ target_include_directories(game_engine SYSTEM PRIVATE
     thirdparty/box2d-2.4.1/include
 )
 
-target_compile_definitions(game_engine PRIVATE
-    _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS
-)
-
 include(CheckIPOSupported)
 check_ipo_supported(RESULT _ipo_supported LANGUAGES CXX)
 if(_ipo_supported)
@@ -141,8 +137,8 @@ endif()
 if(MSVC)
   string(REPLACE "/EHsc" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
   target_compile_options(game_engine PRIVATE
-      /W4
-      /EHs-c-
+      /WX
+      /EHsc-
       $<$<CONFIG:Release>:/Ox /arch:AVX2>
   )
   target_link_options(game_engine PRIVATE
