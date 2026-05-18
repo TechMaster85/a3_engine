@@ -135,13 +135,13 @@ if(_ipo_supported)
 endif()
 
 if(MSVC)
-  string(REPLACE "/EHsc" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+  set(CMAKE_CXX_FLAGS "" CACHE STRING "" FORCE)
   target_compile_options(game_engine PRIVATE
-      /WX
-      /MP
-      /EHsc-
-      $<$<CONFIG:Release>:/Ox /arch:AVX2>
+     /WX /MP /EHs- /EHc-
+     $<$<CONFIG:Debug>:/Od /Zi /RTC1>
+     $<$<CONFIG:Release>:/Ox /arch:AVX2>
   )
+  target_compile_definitions(game_engine PRIVATE _HAS_EXCEPTIONS=0)
 else()
   if(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64|AMD64")
     set(_x86_64 TRUE)
@@ -149,9 +149,7 @@ else()
   target_compile_options(game_engine PRIVATE
       -Wall -Wextra -Werror
       -fno-exceptions
-      -Wno-deprecated-declarations
-      $<$<NOT:$<BOOL:${APPLE}>>:-Wno-template-body>
-      $<$<BOOL:${APPLE}>:-Wno-nontrivial-memcall>
+      $<$<NOT:$<BOOL:${APPLE}>>:-Wno-template-body>  # for rapidjson
       $<$<AND:$<CONFIG:Release>,$<BOOL:${_x86_64}>>:-march=x86-64-v3>
       $<$<CONFIG:Debug>:-fsanitize=undefined>
   )
@@ -163,7 +161,6 @@ endif()
 target_link_libraries(game_engine PRIVATE
     box2d
     lua_static
-    $<$<BOOL:${WIN32}>:SDL2::SDL2main>
     SDL2::SDL2
     SDL2_image::SDL2_image
     SDL2_ttf::SDL2_ttf
@@ -192,27 +189,6 @@ if(NINTENDO_SWITCH)
     COMMAND ${CMAKE_COMMAND} -E rm -f
         "${CMAKE_SOURCE_DIR}/game_engine.elf"
     DEPENDS game_engine_nro
-  )
-endif()
-
-if(WIN32)
-  set(SDL2_DLLS
-    "${sdl2_vc_SOURCE_DIR}/lib/x64/SDL2.dll"
-    "${sdl2_image_vc_SOURCE_DIR}/lib/x64/SDL2_image.dll"
-    "${sdl2_ttf_vc_SOURCE_DIR}/lib/x64/SDL2_ttf.dll"
-    "${sdl2_mixer_vc_SOURCE_DIR}/lib/x64/SDL2_mixer.dll"
-  )
-
-  file(WRITE "${CMAKE_BINARY_DIR}/clean_exe_dir.cmake" [=[
-    file(GLOB stale LIST_DIRECTORIES false "${DIR}/*.dll")
-    file(REMOVE ${stale})
-  ]=])
-
-  add_custom_command(TARGET game_engine POST_BUILD
-    COMMAND ${CMAKE_COMMAND} "-DDIR=$<TARGET_FILE_DIR:${PROJECT_NAME}>"
-        -P "${CMAKE_BINARY_DIR}/clean_exe_dir.cmake"
-    COMMAND ${CMAKE_COMMAND} -E copy ${SDL2_DLLS} "$<TARGET_FILE_DIR:${PROJECT_NAME}>/"
-    VERBATIM
   )
 endif()
 
