@@ -138,6 +138,7 @@ if(MSVC)
   string(REPLACE "/EHsc" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
   target_compile_options(game_engine PRIVATE
       /WX
+      /MP
       /EHsc-
       $<$<CONFIG:Release>:/Ox /arch:AVX2>
   )
