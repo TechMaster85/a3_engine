@@ -30,9 +30,7 @@ public:
             return -1.0F;
         }
 
-        // TODO: if you add explicit phantom fixture metadata, filter it here.
-
-        auto *actor = reinterpret_cast<Actor *>(fixture->GetUserData().pointer);
+        auto *actor = static_cast<Actor *>(fixture->GetUserData().pointer);
         if (actor == nullptr) {
             return -1.0F;
         }
@@ -59,9 +57,7 @@ public:
             return -1.0F;
         }
 
-        // TODO: if you add explicit phantom fixture metadata, filter it here.
-
-        auto *actor = reinterpret_cast<Actor *>(fixture->GetUserData().pointer);
+        auto *actor = static_cast<Actor *>(fixture->GetUserData().pointer);
         if (actor == nullptr) {
             return -1.0F;
         }

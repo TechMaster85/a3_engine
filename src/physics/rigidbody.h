@@ -45,6 +45,7 @@ class Rigidbody {
     static constexpr float GRAVITY = 9.8F;
 
     static void registerContactListener();
+    void addFixture(bool isTrigger);
 
     b2Body *body = nullptr;
 
@@ -76,14 +77,10 @@ public:
     void setX(float val) { setPosition({val, getY()}); }
     float getY() const { return getPosition().y; }
     void setY(float val) { setPosition({getX(), val}); }
-    float getRotationDeg() const { return getRotation(); }
-    void setRotationDeg(float deg) { setRotation(deg); }
     std::string getBodyType() const { return info.body_type; }
     void setBodyType(const std::string &val) { info.body_type = val; }
     bool getPrecise() const { return info.precise; }
     void setPrecise(bool val) { info.precise = val; }
-    float getGravityScaleVal() const { return getGravityScale(); }
-    void setGravityScaleVal(float val) { setGravityScale(val); }
     float getDensity() const { return info.density; }
     void setDensity(float val) { info.density = val; }
     float getAngularFriction() const { return info.angular_friction; }

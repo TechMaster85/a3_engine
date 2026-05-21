@@ -86,46 +86,38 @@ void Rigidbody::onStart() {
         body->CreateFixture(&fixtureDef);
     } else {
         if (info.has_collider) {
-            b2FixtureDef fixtureDef;
-            fixtureDef.density = info.density;
-            fixtureDef.friction = info.friction;
-            fixtureDef.restitution = info.bounciness;
-            fixtureDef.filter.categoryBits = 0x0001;
-            fixtureDef.filter.maskBits = 0x0001;
-            fixtureDef.userData.pointer = reinterpret_cast<uintptr_t>(actor);
-            b2PolygonShape box;
-            b2CircleShape circle;
-            if (info.collider_type == "circle") {
-                circle.m_radius = info.radius;
-                fixtureDef.shape = &circle;
-            } else {
-                box.SetAsBox(info.width * 0.5F, info.height * 0.5F);
-                fixtureDef.shape = &box;
-            }
-            body->CreateFixture(&fixtureDef);
+            addFixture(false);
         }
         if (info.has_trigger) {
-            b2FixtureDef fixtureDef;
-            fixtureDef.density = info.density;
-            fixtureDef.friction = info.friction;
-            fixtureDef.restitution = info.bounciness;
-            fixtureDef.isSensor = true;
-            fixtureDef.filter.categoryBits = 0x0002;
-            fixtureDef.filter.maskBits = 0x0002;
-            fixtureDef.userData.pointer = reinterpret_cast<uintptr_t>(actor);
-            b2PolygonShape box;
-            b2CircleShape circle;
-            if (info.trigger_type == "circle") {
-                circle.m_radius = info.trigger_radius;
-                fixtureDef.shape = &circle;
-            } else {
-                box.SetAsBox(info.trigger_width * 0.5F,
-                             info.trigger_height * 0.5F);
-                fixtureDef.shape = &box;
-            }
-            body->CreateFixture(&fixtureDef);
+            addFixture(true);
         }
     }
+}
+
+void Rigidbody::addFixture(bool isTrigger) {
+    b2FixtureDef fixtureDef;
+    fixtureDef.density = info.density;
+    fixtureDef.friction = info.friction;
+    fixtureDef.restitution = info.bounciness;
+    fixtureDef.isSensor = isTrigger;
+    fixtureDef.filter.categoryBits = isTrigger ? 0x0002 : 0x0001;
+    fixtureDef.filter.maskBits = isTrigger ? 0x0002 : 0x0001;
+    fixtureDef.userData.pointer = actor;
+
+    b2PolygonShape box;
+    b2CircleShape circle;
+    const std::string &shapeType =
+        isTrigger ? info.trigger_type : info.collider_type;
+    if (shapeType == "circle") {
+        circle.m_radius = isTrigger ? info.trigger_radius : info.radius;
+        fixtureDef.shape = &circle;
+    } else {
+        const float w = isTrigger ? info.trigger_width : info.width;
+        const float h = isTrigger ? info.trigger_height : info.height;
+        box.SetAsBox(w * 0.5F, h * 0.5F);
+        fixtureDef.shape = &box;
+    }
+    body->CreateFixture(&fixtureDef);
 }
 
 void Rigidbody::onDestroy() {
@@ -226,7 +218,7 @@ b2Vec2 Rigidbody::getUpDirection() const {
         return {0.0F, -1.0F};
     }
     const float angle = body->GetAngle();
-    return b2Vec2(std::sin(angle), -std::cos(angle));
+    return {std::sin(angle), -std::cos(angle)};
 }
 
 b2Vec2 Rigidbody::getRightDirection() const {
@@ -238,7 +230,10 @@ b2Vec2 Rigidbody::getRightDirection() const {
 }
 
 void Rigidbody::step() {
-    getWorld().Step(1.0F / 60.0F, 8, 3);
+    constexpr float DELTA_TIME = 1.0F / 60.0F;
+    constexpr int VEL_ITERATIONS = 8;
+    constexpr int POS_ITERATIONS = 3;
+    getWorld().Step(DELTA_TIME, VEL_ITERATIONS, POS_ITERATIONS);
 
     for (const auto &event : ContactQueue::collisions) {
         if ((event.receiver != nullptr) && (event.collision.other != nullptr)) {
