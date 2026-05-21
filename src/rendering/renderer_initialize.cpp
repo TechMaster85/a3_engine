@@ -1,6 +1,6 @@
 #include "renderer.h"
 
-#include "config.h"
+#include "core/config.h"
 #include "core/fileutil.h"
 #include "core/jsonutil.h"
 

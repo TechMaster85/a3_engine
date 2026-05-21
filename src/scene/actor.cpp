@@ -2,7 +2,7 @@
 
 #include "componentmanager.h"
 #include "documentmanager.h"
-#include "engine.h"
+#include "engine/engine.h"
 
 #include <lua/lua.hpp>
 

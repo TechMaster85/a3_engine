@@ -2,7 +2,7 @@
 
 #include "actor.h"
 #include "core/fileutil.h"
-#include "engine.h"
+#include "engine/engine.h"
 #include "particles/particlesystem.h"
 #include "physics/rigidbody.h"
 

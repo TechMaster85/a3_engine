@@ -3,12 +3,12 @@
 #include "audio/audio.h"
 #include "core/debug.h"
 #include "core/fileutil.h"
-#include "engine.h"
+#include "engine/engine.h"
 #include "events/eventmanager.h"
 #include "input/input.h"
 #include "particles/particlesystem.h"
-#include "rendering/renderer.h"
 #include "physics/rigidbody.h"
+#include "rendering/renderer.h"
 #include "scene/actor.h"
 #include "scene/scenedb.h"
 
@@ -24,7 +24,7 @@ void LuaBindings::registerAll(lua_State *L) {
         .addProperty("y", &glm::vec2::y)
         .endClass();
 
-    Engine::registerLuaBindings();  // L is part of engine already
+    Engine::registerLuaBindings(); // L is part of engine already
     Actor::registerLuaBindings(L);
     Input::registerLuaBindings(L);
     Debug::registerLuaBindings(L);

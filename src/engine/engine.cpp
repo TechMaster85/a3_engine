@@ -1,16 +1,16 @@
 #include "engine.h"
 
 #include "audio/audio.h"
-#include "config.h"
+#include "core/config.h"
 #include "events/eventmanager.h"
 #include "input/input.h"
-#include "luabindings.h"
 #include "physics/rigidbody.h"
 #include "rendering/renderer.h"
 #include "rendering/textdb.h"
 #include "scene/componentmanager.h"
 #include "scene/documentmanager.h"
 #include "scene/scenedb.h"
+#include "scripting/luabindings.h"
 
 #include <lua/lua.hpp>
 

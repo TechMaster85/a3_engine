@@ -1,7 +1,7 @@
 #pragma once
 
-#include "engine.h"
-#include "rigidbody.h"
+#include "engine/engine.h"
+#include "physics/rigidbody.h"
 #include "scene/actor.h"
 
 #include <box2d/b2_fixture.h>

@@ -2,7 +2,7 @@
 
 #include "actor.h"
 #include "documentmanager.h"
-#include "engine.h"
+#include "engine/engine.h"
 #include "physics/collision.h"
 
 #include <algorithm>
