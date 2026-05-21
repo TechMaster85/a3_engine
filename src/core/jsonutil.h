@@ -1,7 +1,6 @@
 #pragma once
 
 #include <rapidjson/document.h>
-#include <rapidjson/fwd.h>
 
 #include <cstdint>
 #include <filesystem>
