@@ -165,7 +165,32 @@ void Input::handleEvent(SDL_Event &e) {
         mousePosition = {e.tfinger.x * Renderer::getResolution().x,
                          e.tfinger.y * Renderer::getResolution().y};
         break;
-
+    case SDL_CONTROLLERDEVICEADDED: {
+        int slot = -1;
+        for (int i = 0; i < 4; ++i) {
+            if (!controllers[i].connected) { slot = i; break; }
+        }
+        if (slot == -1) break;
+        SDL_GameController* handle = SDL_GameControllerOpen(e.cdevice.which);
+        if (!handle) break;
+        SDL_JoystickID id = SDL_JoystickInstanceID(SDL_GameControllerGetJoystick(handle));
+        controllers[slot].handle = handle;
+        controllers[slot].connected = true;
+        instanceToSlot[id] = slot;
+        break;
+    }
+    case SDL_CONTROLLERDEVICEREMOVED: {
+        auto it = instanceToSlot.find(e.cdevice.which);
+        if (it == instanceToSlot.end()) break;
+        int slot = it->second;
+        SDL_GameControllerClose(controllers[slot].handle);
+        controllers[slot].handle = nullptr;
+        controllers[slot].buttons.fill(UP);
+        controllers[slot].axes.fill(0.0F);
+        controllers[slot].connected = false;
+        instanceToSlot.erase(it);
+        break;
+    }
     default:
         break;
     }
