@@ -21,12 +21,12 @@ public:
     enum KeyState : uint8_t { UP, JUST_DOWN, DOWN, JUST_UP };
 
     struct ControllerState {
-        bool connected = false;
-        SDL_GameController* handle = nullptr;
+        bool connected;
+        SDL_GameController* handle;
         std::array<KeyState, SDL_CONTROLLER_BUTTON_MAX> buttons;
         std::array<float, SDL_CONTROLLER_AXIS_MAX> axes;
 
-        ControllerState() noexcept : buttons{}, axes{} {}
+        ControllerState() noexcept : connected(false), handle(nullptr), buttons{}, axes{} {}
     };
 
     // Runs every frame
