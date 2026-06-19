@@ -180,14 +180,15 @@ void Input::handleEvent(SDL_Event &e) {
                          e.tfinger.y * Renderer::getResolution().y};
         break;
     case SDL_CONTROLLERDEVICEADDED: {
+        SDL_JoystickID id = SDL_JoystickGetDeviceInstanceID(e.cdevice.which);
+        if (id < 0 || instanceToSlot.find(id) != instanceToSlot.end()) break;
         int slot = -1;
         for (int i = 0; i < 4; ++i) {
-            if (!controllers[i].connected) { slot = i; break; }
+            if (!controllers[static_cast<std::size_t>(i)].connected) { slot = i; break; }
         }
         if (slot == -1) break;
         SDL_GameController* handle = SDL_GameControllerOpen(e.cdevice.which);
         if (!handle) break;
-        SDL_JoystickID id = SDL_JoystickInstanceID(SDL_GameControllerGetJoystick(handle));
         controllers[static_cast<std::size_t>(slot)].handle = handle;
         controllers[static_cast<std::size_t>(slot)].connected = true;
         instanceToSlot[id] = slot;
