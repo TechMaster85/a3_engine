@@ -4,12 +4,14 @@
 
 #include <SDL_events.h>
 #include <SDL_gamecontroller.h>
+#include <SDL_joystick.h>
 #include <SDL_scancode.h>
 #include <SDL_stdinc.h>
 
 #include <array>
 #include <cstdint>
 #include <string>
+#include <unordered_map>
 
 struct lua_State;
 
@@ -17,6 +19,16 @@ class Input {
 public:
     explicit Input() = default;
     enum KeyState : uint8_t { UP, JUST_DOWN, DOWN, JUST_UP };
+
+    struct ControllerState {
+        bool connected;
+        SDL_GameController* handle;
+        std::array<KeyState, SDL_CONTROLLER_BUTTON_MAX> buttons;
+        std::array<float, SDL_CONTROLLER_AXIS_MAX> axes;
+
+        ControllerState() noexcept
+            : connected(false), handle(nullptr), buttons{}, axes{} {}
+    };
 
     // Runs every frame
     static void resetFrame();
@@ -57,4 +69,7 @@ private:
     static inline float rightStickY = 0.0F;
 
     static inline SDL_GameController *controller = nullptr;
+
+    static inline std::array<ControllerState, 4> controllers;
+    static inline std::unordered_map<SDL_JoystickID, int> instanceToSlot;
 };
