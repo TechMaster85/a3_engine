@@ -115,10 +115,10 @@ void Input::resetFrame() {
         }
     }
     constexpr float SCROLL_STICK_SPEED = 0.15F;
-    const float rightStickY = controllers[0].connected
+    const float scrollStickValue = controllers[0].connected
         ? controllers[0].axes[SDL_CONTROLLER_AXIS_RIGHTY]
         : 0.0F;
-    scrollDelta = rightStickY * SCROLL_STICK_SPEED;
+    scrollDelta = scrollStickValue * SCROLL_STICK_SPEED;
 }
 
 void Input::handleEvent(SDL_Event &e) {
@@ -144,13 +144,13 @@ void Input::handleEvent(SDL_Event &e) {
     case SDL_CONTROLLERAXISMOTION: {
         auto it = instanceToSlot.find(e.caxis.which);
         if (it != instanceToSlot.end())
-            controllers[it->second].axes[e.caxis.axis] = e.caxis.value / 32767.0F;
+            controllers[static_cast<std::size_t>(it->second)].axes[e.caxis.axis] = e.caxis.value / 32767.0F;
         break;
     }
     case SDL_CONTROLLERBUTTONDOWN: {
         auto it = instanceToSlot.find(e.cbutton.which);
         if (it != instanceToSlot.end())
-            controllers[it->second].buttons[e.cbutton.button] = JUST_DOWN;
+            controllers[static_cast<std::size_t>(it->second)].buttons[e.cbutton.button] = JUST_DOWN;
         auto kit = controllerToKeyboard.find(
             static_cast<SDL_GameControllerButton>(e.cbutton.button));
         if (kit != controllerToKeyboard.end())
@@ -160,7 +160,7 @@ void Input::handleEvent(SDL_Event &e) {
     case SDL_CONTROLLERBUTTONUP: {
         auto it = instanceToSlot.find(e.cbutton.which);
         if (it != instanceToSlot.end())
-            controllers[it->second].buttons[e.cbutton.button] = JUST_UP;
+            controllers[static_cast<std::size_t>(it->second)].buttons[e.cbutton.button] = JUST_UP;
         auto kit = controllerToKeyboard.find(
             static_cast<SDL_GameControllerButton>(e.cbutton.button));
         if (kit != controllerToKeyboard.end())
@@ -188,8 +188,8 @@ void Input::handleEvent(SDL_Event &e) {
         SDL_GameController* handle = SDL_GameControllerOpen(e.cdevice.which);
         if (!handle) break;
         SDL_JoystickID id = SDL_JoystickInstanceID(SDL_GameControllerGetJoystick(handle));
-        controllers[slot].handle = handle;
-        controllers[slot].connected = true;
+        controllers[static_cast<std::size_t>(slot)].handle = handle;
+        controllers[static_cast<std::size_t>(slot)].connected = true;
         instanceToSlot[id] = slot;
         break;
     }
@@ -197,11 +197,11 @@ void Input::handleEvent(SDL_Event &e) {
         auto it = instanceToSlot.find(e.cdevice.which);
         if (it == instanceToSlot.end()) break;
         int slot = it->second;
-        SDL_GameControllerClose(controllers[slot].handle);
-        controllers[slot].handle = nullptr;
-        controllers[slot].buttons.fill(UP);
-        controllers[slot].axes.fill(0.0F);
-        controllers[slot].connected = false;
+        SDL_GameControllerClose(controllers[static_cast<std::size_t>(slot)].handle);
+        controllers[static_cast<std::size_t>(slot)].handle = nullptr;
+        controllers[static_cast<std::size_t>(slot)].buttons.fill(UP);
+        controllers[static_cast<std::size_t>(slot)].axes.fill(0.0F);
+        controllers[static_cast<std::size_t>(slot)].connected = false;
         instanceToSlot.erase(it);
         break;
     }

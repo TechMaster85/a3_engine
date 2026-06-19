@@ -10,8 +10,8 @@ void Input::initializeController() {
             SDL_GameController* handle = SDL_GameControllerOpen(i);
             if (!handle) continue;
             SDL_JoystickID id = SDL_JoystickInstanceID(SDL_GameControllerGetJoystick(handle));
-            controllers[slot].handle = handle;
-            controllers[slot].connected = true;
+            controllers[static_cast<std::size_t>(slot)].handle = handle;
+            controllers[static_cast<std::size_t>(slot)].connected = true;
             instanceToSlot[id] = slot;
             ++slot;
         }

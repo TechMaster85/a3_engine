@@ -21,13 +21,12 @@ public:
     enum KeyState : uint8_t { UP, JUST_DOWN, DOWN, JUST_UP };
 
     struct ControllerState {
-        bool connected;
-        SDL_GameController* handle;
+        bool connected = false;
+        SDL_GameController* handle = nullptr;
         std::array<KeyState, SDL_CONTROLLER_BUTTON_MAX> buttons;
         std::array<float, SDL_CONTROLLER_AXIS_MAX> axes;
 
-        ControllerState() noexcept
-            : connected(false), handle(nullptr), buttons{}, axes{} {}
+        ControllerState() noexcept : buttons{}, axes{} {}
     };
 
     // Runs every frame
@@ -66,7 +65,6 @@ private:
     static inline std::array<KeyState, 4> mouseKeys;
     static inline glm::vec2 mousePosition;
     static inline float scrollDelta = 0.0F;
-
     static inline std::array<ControllerState, 4> controllers;
     static inline std::unordered_map<SDL_JoystickID, int> instanceToSlot;
 };
