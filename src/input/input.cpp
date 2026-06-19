@@ -108,8 +108,17 @@ void Input::resetFrame() {
     for (KeyState &k : mouseKeys) {
         setKeyToHold(k);
     }
+    for (auto& c : controllers) {
+        if (!c.connected) continue;
+        for (KeyState& b : c.buttons) {
+            setKeyToHold(b);
+        }
+    }
     constexpr float SCROLL_STICK_SPEED = 0.15F;
-    scrollDelta = rightStickY * SCROLL_STICK_SPEED;
+    const float scrollStickValue = controllers[0].connected
+        ? controllers[0].axes[SDL_CONTROLLER_AXIS_RIGHTY]
+        : 0.0F;
+    scrollDelta = scrollStickValue * SCROLL_STICK_SPEED;
 }
 
 void Input::handleEvent(SDL_Event &e) {
@@ -133,24 +142,29 @@ void Input::handleEvent(SDL_Event &e) {
         scrollDelta += e.wheel.preciseY;
         break;
     case SDL_CONTROLLERAXISMOTION: {
-        if (e.caxis.axis == SDL_CONTROLLER_AXIS_RIGHTY) {
-            const float normalized = e.caxis.value / 32767.0F;
-            rightStickY = (std::abs(normalized) > 0.25F) ? -normalized : 0.0F;
-        }
+        auto it = instanceToSlot.find(e.caxis.which);
+        if (it != instanceToSlot.end())
+            controllers[static_cast<std::size_t>(it->second)].axes[e.caxis.axis] = e.caxis.value / 32767.0F;
         break;
     }
     case SDL_CONTROLLERBUTTONDOWN: {
-        auto it = controllerToKeyboard.find(
+        auto it = instanceToSlot.find(e.cbutton.which);
+        if (it != instanceToSlot.end())
+            controllers[static_cast<std::size_t>(it->second)].buttons[e.cbutton.button] = JUST_DOWN;
+        auto kit = controllerToKeyboard.find(
             static_cast<SDL_GameControllerButton>(e.cbutton.button));
-        if (it != controllerToKeyboard.end())
-            keys[it->second] = JUST_DOWN;
+        if (kit != controllerToKeyboard.end())
+            keys[kit->second] = JUST_DOWN;
         break;
     }
     case SDL_CONTROLLERBUTTONUP: {
-        auto it = controllerToKeyboard.find(
+        auto it = instanceToSlot.find(e.cbutton.which);
+        if (it != instanceToSlot.end())
+            controllers[static_cast<std::size_t>(it->second)].buttons[e.cbutton.button] = JUST_UP;
+        auto kit = controllerToKeyboard.find(
             static_cast<SDL_GameControllerButton>(e.cbutton.button));
-        if (it != controllerToKeyboard.end())
-            keys[it->second] = JUST_UP;
+        if (kit != controllerToKeyboard.end())
+            keys[kit->second] = JUST_UP;
         break;
     }
     case SDL_FINGERDOWN:
@@ -165,7 +179,33 @@ void Input::handleEvent(SDL_Event &e) {
         mousePosition = {e.tfinger.x * Renderer::getResolution().x,
                          e.tfinger.y * Renderer::getResolution().y};
         break;
-
+    case SDL_CONTROLLERDEVICEADDED: {
+        SDL_JoystickID id = SDL_JoystickGetDeviceInstanceID(e.cdevice.which);
+        if (id < 0 || instanceToSlot.find(id) != instanceToSlot.end()) break;
+        int slot = -1;
+        for (int i = 0; i < 4; ++i) {
+            if (!controllers[static_cast<std::size_t>(i)].connected) { slot = i; break; }
+        }
+        if (slot == -1) break;
+        SDL_GameController* handle = SDL_GameControllerOpen(e.cdevice.which);
+        if (!handle) break;
+        controllers[static_cast<std::size_t>(slot)].handle = handle;
+        controllers[static_cast<std::size_t>(slot)].connected = true;
+        instanceToSlot[id] = slot;
+        break;
+    }
+    case SDL_CONTROLLERDEVICEREMOVED: {
+        auto it = instanceToSlot.find(e.cdevice.which);
+        if (it == instanceToSlot.end()) break;
+        int slot = it->second;
+        SDL_GameControllerClose(controllers[static_cast<std::size_t>(slot)].handle);
+        controllers[static_cast<std::size_t>(slot)].handle = nullptr;
+        controllers[static_cast<std::size_t>(slot)].buttons.fill(UP);
+        controllers[static_cast<std::size_t>(slot)].axes.fill(0.0F);
+        controllers[static_cast<std::size_t>(slot)].connected = false;
+        instanceToSlot.erase(it);
+        break;
+    }
     default:
         break;
     }
