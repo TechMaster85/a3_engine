@@ -66,9 +66,6 @@ private:
     static inline std::array<KeyState, 4> mouseKeys;
     static inline glm::vec2 mousePosition;
     static inline float scrollDelta = 0.0F;
-    static inline float rightStickY = 0.0F;
-
-    static inline SDL_GameController *controller = nullptr;
 
     static inline std::array<ControllerState, 4> controllers;
     static inline std::unordered_map<SDL_JoystickID, int> instanceToSlot;
