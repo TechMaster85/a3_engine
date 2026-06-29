@@ -26,7 +26,7 @@ void LuaBindings::registerAll(lua_State *L) {
 
     Engine::registerLuaBindings(); // L is part of engine already
     Actor::registerLuaBindings(L);
-    Input::registerLuaBindings(L);
+    InputState::registerLuaBindings(L);
     Debug::registerLuaBindings(L);
     SceneDB::registerLuaBindings(L);
     Audio::registerLuaBindings(L);

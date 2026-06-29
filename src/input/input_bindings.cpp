@@ -4,18 +4,18 @@
 
 #include <LuaBridge/LuaBridge.h>
 
-void Input::registerLuaBindings(lua_State *L) {
+void InputState::registerLuaBindings(lua_State *L) {
     luabridge::getGlobalNamespace(L)
         .beginNamespace("Input")
-        .addFunction("GetKey", &Input::getKey)
-        .addFunction("GetKeyDown", &Input::getKeyDown)
-        .addFunction("GetKeyUp", &Input::getKeyUp)
-        .addFunction("GetMousePosition", &Input::getMousePosition)
-        .addFunction("GetMouseButton", &Input::getMouseButton)
-        .addFunction("GetMouseButtonDown", &Input::getMouseButtonDown)
-        .addFunction("GetMouseButtonUp", &Input::getMouseButtonUp)
-        .addFunction("GetMouseScrollDelta", &Input::getMouseScrollDelta)
-        .addFunction("HideCursor", &Input::hideCursor)
-        .addFunction("ShowCursor", &Input::showCursor)
+        .addFunction("GetKey", &InputState::getKey)
+        .addFunction("GetKeyDown", &InputState::getKeyDown)
+        .addFunction("GetKeyUp", &InputState::getKeyUp)
+        .addFunction("GetMousePosition", &InputState::getMousePosition)
+        .addFunction("GetMouseButton", &InputState::getMouseButton)
+        .addFunction("GetMouseButtonDown", &InputState::getMouseButtonDown)
+        .addFunction("GetMouseButtonUp", &InputState::getMouseButtonUp)
+        .addFunction("GetMouseScrollDelta", &InputState::getMouseScrollDelta)
+        .addFunction("HideCursor", &InputState::hideCursor)
+        .addFunction("ShowCursor", &InputState::showCursor)
         .endNamespace();
 }

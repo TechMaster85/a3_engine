@@ -32,7 +32,7 @@ void Engine::startup() {
     DocumentManager();
     Audio();
     Config();
-    Input();
+    InputState();
     Renderer();
     SceneDB();
     TextDB();
@@ -48,14 +48,14 @@ void Engine::startup() {
 }
 
 void Engine::input() {
-    Input::resetFrame();
+    InputState::resetFrame();
     SDL_Event e;
     while (SDL_PollEvent(&e) != 0) {
         if (e.type == SDL_QUIT) {
             Engine::running = false;
             break;
         }
-        Input::handleEvent(e);
+        InputState::handleEvent(e);
     }
 }
 

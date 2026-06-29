@@ -6,16 +6,15 @@
 #include <SDL_gamecontroller.h>
 #include <SDL_scancode.h>
 
-#include <cmath>
 #include <cstdint>
 #include <string>
 #include <unordered_map>
 
 namespace {
-inline void setKeyToHold(Input::KeyState &k) {
+inline void setKeyToHold(KeyState &k) {
     // JUST_DOWN and JUST_UP are enums 1 and 3, respectively
     const uint8_t justOn = (k & 1);
-    k = static_cast<Input::KeyState>((k + justOn) & 0b11);
+    k = static_cast<KeyState>((k + justOn) & 0b11);
 }
 
 const std::unordered_map<std::string, SDL_Scancode> keycodeToScancode = {
@@ -101,39 +100,42 @@ const std::unordered_map<SDL_GameControllerButton, SDL_Scancode>
         {SDL_CONTROLLER_BUTTON_DPAD_RIGHT, SDL_SCANCODE_RIGHT}};
 } // namespace
 
-void Input::resetFrame() {
-    for (KeyState &k : keys) {
+void InputState::resetFrame() {
+    for (KeyState &k : keyboardKeyStates) {
         setKeyToHold(k);
     }
-    for (KeyState &k : mouseKeys) {
+    for (KeyState &k : mouseKeyStates) {
         setKeyToHold(k);
     }
-    for (auto& c : controllers) {
-        if (!c.connected) continue;
-        for (KeyState& b : c.buttons) {
+    for (auto &c : controllerStates) {
+        if (!c.connected) {
+            continue;
+        }
+        for (KeyState &b : c.buttons) {
             setKeyToHold(b);
         }
     }
     constexpr float SCROLL_STICK_SPEED = 0.15F;
-    const float scrollStickValue = controllers[0].connected
-        ? controllers[0].axes[SDL_CONTROLLER_AXIS_RIGHTY]
-        : 0.0F;
+    const float scrollStickValue =
+        controllerStates[0].connected
+            ? controllerStates[0].axes[SDL_CONTROLLER_AXIS_RIGHTY]
+            : 0.0F;
     scrollDelta = scrollStickValue * SCROLL_STICK_SPEED;
 }
 
-void Input::handleEvent(SDL_Event &e) {
+void InputState::handleEvent(SDL_Event &e) {
     switch (e.type) {
     case SDL_KEYDOWN:
-        keys[e.key.keysym.scancode] = JUST_DOWN;
+        keyboardKeyStates[e.key.keysym.scancode] = JUST_DOWN;
         break;
     case SDL_KEYUP:
-        keys[e.key.keysym.scancode] = JUST_UP;
+        keyboardKeyStates[e.key.keysym.scancode] = JUST_UP;
         break;
     case SDL_MOUSEBUTTONDOWN:
-        mouseKeys[e.button.button] = JUST_DOWN;
+        mouseKeyStates[e.button.button] = JUST_DOWN;
         break;
     case SDL_MOUSEBUTTONUP:
-        mouseKeys[e.button.button] = JUST_UP;
+        mouseKeyStates[e.button.button] = JUST_UP;
         break;
     case SDL_MOUSEMOTION:
         mousePosition = {e.motion.x, e.motion.y};
@@ -143,37 +145,45 @@ void Input::handleEvent(SDL_Event &e) {
         break;
     case SDL_CONTROLLERAXISMOTION: {
         auto it = instanceToSlot.find(e.caxis.which);
-        if (it != instanceToSlot.end())
-            controllers[static_cast<std::size_t>(it->second)].axes[e.caxis.axis] = e.caxis.value / 32767.0F;
+        if (it != instanceToSlot.end()) {
+            controllerStates[static_cast<std::size_t>(it->second)]
+                .axes[e.caxis.axis] = e.caxis.value / 32767.0F;
+        }
         break;
     }
     case SDL_CONTROLLERBUTTONDOWN: {
         auto it = instanceToSlot.find(e.cbutton.which);
-        if (it != instanceToSlot.end())
-            controllers[static_cast<std::size_t>(it->second)].buttons[e.cbutton.button] = JUST_DOWN;
+        if (it != instanceToSlot.end()) {
+            controllerStates[static_cast<std::size_t>(it->second)]
+                .buttons[e.cbutton.button] = JUST_DOWN;
+        }
         auto kit = controllerToKeyboard.find(
             static_cast<SDL_GameControllerButton>(e.cbutton.button));
-        if (kit != controllerToKeyboard.end())
-            keys[kit->second] = JUST_DOWN;
+        if (kit != controllerToKeyboard.end()) {
+            keyboardKeyStates[kit->second] = JUST_DOWN;
+}
         break;
     }
     case SDL_CONTROLLERBUTTONUP: {
         auto it = instanceToSlot.find(e.cbutton.which);
-        if (it != instanceToSlot.end())
-            controllers[static_cast<std::size_t>(it->second)].buttons[e.cbutton.button] = JUST_UP;
+        if (it != instanceToSlot.end()) {
+            controllerStates[static_cast<std::size_t>(it->second)]
+                .buttons[e.cbutton.button] = JUST_UP;
+        }
         auto kit = controllerToKeyboard.find(
             static_cast<SDL_GameControllerButton>(e.cbutton.button));
-        if (kit != controllerToKeyboard.end())
-            keys[kit->second] = JUST_UP;
+        if (kit != controllerToKeyboard.end()) {
+            keyboardKeyStates[kit->second] = JUST_UP;
+        }
         break;
     }
     case SDL_FINGERDOWN:
         mousePosition = {e.tfinger.x * Renderer::getResolution().x,
                          e.tfinger.y * Renderer::getResolution().y};
-        mouseKeys[1] = JUST_DOWN;
+        mouseKeyStates[1] = JUST_DOWN;
         break;
     case SDL_FINGERUP:
-        mouseKeys[1] = JUST_UP;
+        mouseKeyStates[1] = JUST_UP;
         break;
     case SDL_FINGERMOTION:
         mousePosition = {e.tfinger.x * Renderer::getResolution().x,
@@ -181,28 +191,40 @@ void Input::handleEvent(SDL_Event &e) {
         break;
     case SDL_CONTROLLERDEVICEADDED: {
         SDL_JoystickID id = SDL_JoystickGetDeviceInstanceID(e.cdevice.which);
-        if (id < 0 || instanceToSlot.find(id) != instanceToSlot.end()) break;
+        if (id < 0 || instanceToSlot.find(id) != instanceToSlot.end()) {
+            break;
+        }
         int slot = -1;
         for (int i = 0; i < 4; ++i) {
-            if (!controllers[static_cast<std::size_t>(i)].connected) { slot = i; break; }
+            if (!controllerStates[static_cast<std::size_t>(i)].connected) {
+                slot = i;
+                break;
+            }
         }
-        if (slot == -1) break;
-        SDL_GameController* handle = SDL_GameControllerOpen(e.cdevice.which);
-        if (!handle) break;
-        controllers[static_cast<std::size_t>(slot)].handle = handle;
-        controllers[static_cast<std::size_t>(slot)].connected = true;
+        if (slot == -1) {
+            break;
+        }
+        SDL_GameController *handle = SDL_GameControllerOpen(e.cdevice.which);
+        if (handle == nullptr) {
+            break;
+        }
+        controllerStates[static_cast<std::size_t>(slot)].handle = handle;
+        controllerStates[static_cast<std::size_t>(slot)].connected = true;
         instanceToSlot[id] = slot;
         break;
     }
     case SDL_CONTROLLERDEVICEREMOVED: {
         auto it = instanceToSlot.find(e.cdevice.which);
-        if (it == instanceToSlot.end()) break;
+        if (it == instanceToSlot.end()) {
+            break;
+        }
         int slot = it->second;
-        SDL_GameControllerClose(controllers[static_cast<std::size_t>(slot)].handle);
-        controllers[static_cast<std::size_t>(slot)].handle = nullptr;
-        controllers[static_cast<std::size_t>(slot)].buttons.fill(UP);
-        controllers[static_cast<std::size_t>(slot)].axes.fill(0.0F);
-        controllers[static_cast<std::size_t>(slot)].connected = false;
+        SDL_GameControllerClose(
+            controllerStates[static_cast<std::size_t>(slot)].handle);
+        controllerStates[static_cast<std::size_t>(slot)].handle = nullptr;
+        controllerStates[static_cast<std::size_t>(slot)].buttons.fill(UP);
+        controllerStates[static_cast<std::size_t>(slot)].axes.fill(0.0F);
+        controllerStates[static_cast<std::size_t>(slot)].connected = false;
         instanceToSlot.erase(it);
         break;
     }
@@ -212,24 +234,24 @@ void Input::handleEvent(SDL_Event &e) {
 }
 
 // View keyboard
-bool Input::getKey(const std::string &keycode) {
+bool InputState::getKey(const std::string &keycode) {
     const auto it = keycodeToScancode.find(keycode);
     if (it == keycodeToScancode.end()) {
         return false;
     }
-    return keys[it->second] == DOWN || keys[it->second] == JUST_DOWN;
+    return keyboardKeyStates[it->second] == DOWN || keyboardKeyStates[it->second] == JUST_DOWN;
 }
-bool Input::getKeyDown(const std::string &keycode) {
+bool InputState::getKeyDown(const std::string &keycode) {
     const auto it = keycodeToScancode.find(keycode);
     if (it == keycodeToScancode.end()) {
         return false;
     }
-    return keys[it->second] == JUST_DOWN;
+    return keyboardKeyStates[it->second] == JUST_DOWN;
 }
-bool Input::getKeyUp(const std::string &keycode) {
+bool InputState::getKeyUp(const std::string &keycode) {
     const auto it = keycodeToScancode.find(keycode);
     if (it == keycodeToScancode.end()) {
         return false;
     }
-    return keys[it->second] == JUST_UP;
+    return keyboardKeyStates[it->second] == JUST_UP;
 }
