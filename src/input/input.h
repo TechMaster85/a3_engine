@@ -11,15 +11,12 @@
 #include <array>
 #include <cstdint>
 #include <string>
-#include <unordered_map>
 
 struct lua_State;
 
 enum KeyState : uint8_t { UP, JUST_DOWN, DOWN, JUST_UP };
 
 struct ControllerState {
-    bool connected = false;
-    SDL_GameController* handle = nullptr;
     std::array<KeyState, SDL_CONTROLLER_BUTTON_MAX> buttons{};
     std::array<float, SDL_CONTROLLER_AXIS_MAX> axes{};
 };
@@ -46,7 +43,9 @@ public:
         return mouseKeyStates[b] == JUST_DOWN;
     }
 
-    static bool getMouseButtonUp(Uint8 b) { return mouseKeyStates[b] == JUST_UP; }
+    static bool getMouseButtonUp(Uint8 b) {
+        return mouseKeyStates[b] == JUST_UP;
+    }
     static glm::vec2 getMousePosition() { return mousePosition; };
     static float getMouseScrollDelta() { return scrollDelta; };
 
@@ -54,17 +53,18 @@ public:
     static void hideCursor() { SDL_ShowCursor(SDL_DISABLE); }
     static void showCursor() { SDL_ShowCursor(SDL_ENABLE); }
 
-    // Controller features
-    static void initializeController();
-
     // Lua
     static void registerLuaBindings(lua_State *L);
 
 private:
+    // Keyboard and mouse states
     static inline std::array<KeyState, SDL_NUM_SCANCODES> keyboardKeyStates;
     static inline std::array<KeyState, 4> mouseKeyStates;
     static inline glm::vec2 mousePosition;
     static inline float scrollDelta = 0.0F;
-    static inline std::array<ControllerState, 4> controllerStates;
-    static inline std::unordered_map<SDL_JoystickID, int> instanceToSlot;
+
+    // Controller states
+    static inline uint8_t numControllersOpen = 0;
+    static constexpr size_t MAX_NUM_PLAYERS = 8;
+    static inline std::array<ControllerState, MAX_NUM_PLAYERS> controllerStates;
 };

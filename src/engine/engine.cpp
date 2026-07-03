@@ -27,6 +27,12 @@ void Engine::startup() {
 #ifdef __SWITCH__
     romfsInit();
 #endif
+
+#ifdef __APPLE__
+    // Apple can't count controllers for some reason, bug report sent
+    SDL_SetHint(SDL_HINT_JOYSTICK_MFI, "0");
+#endif
+
     SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMECONTROLLER);
     ComponentManager();
     DocumentManager();
@@ -42,9 +48,6 @@ void Engine::startup() {
     LuaBindings::registerAll(L);
 
     SceneDB::loadScene(Config::initialScene);
-#ifdef __SWITCH__
-    Input::initializeController();
-#endif
 }
 
 void Engine::input() {
