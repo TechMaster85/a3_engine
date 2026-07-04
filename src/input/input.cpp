@@ -5,19 +5,10 @@
 #include <SDL_scancode.h>
 
 #include <cstdint>
-// #include <iostream>
 #include <string>
 #include <unordered_map>
 
 namespace {
-inline void setKeyToHold(KeyState &k) {
-    // JUST_DOWN and JUST_UP are enums 1 and 3, respectively
-    const uint8_t justOn = (k & 1);
-    k = static_cast<KeyState>((k + justOn) & 0b11);
-}
-
-inline bool playerIsInvalid(int player) { return (player < 0 || player >= 8); }
-
 const std::unordered_map<std::string, SDL_Scancode> keycodeToScancode = {
     // Directional (arrow) Keys
     {"up", SDL_SCANCODE_UP},
@@ -93,13 +84,36 @@ const std::unordered_map<std::string, SDL_Scancode> keycodeToScancode = {
     {"\\", SDL_SCANCODE_BACKSLASH},
     {"'", SDL_SCANCODE_APOSTROPHE}};
 
-const std::unordered_map<SDL_GameControllerButton, SDL_Scancode>
-    controllerToKeyboard{
-        {SDL_CONTROLLER_BUTTON_DPAD_UP, SDL_SCANCODE_UP},
-        {SDL_CONTROLLER_BUTTON_DPAD_DOWN, SDL_SCANCODE_DOWN},
-        {SDL_CONTROLLER_BUTTON_DPAD_LEFT, SDL_SCANCODE_LEFT},
-        {SDL_CONTROLLER_BUTTON_DPAD_RIGHT, SDL_SCANCODE_RIGHT}};
+inline bool playerIsInvalid(int player) { return (player < 0 || player >= 8); }
+
+inline void setKeyToHold(KeyState &k) {
+    // JUST_DOWN and JUST_UP are enums 1 and 3, respectively
+    const uint8_t justOn = (k & 1);
+    k = static_cast<KeyState>((k + justOn) & 0b11);
+}
 } // namespace
+
+KeyState InputState::getKeyboardKeyState(const char *keycode) {
+    const auto it = keycodeToScancode.find(keycode);
+    if (it == keycodeToScancode.end()) {
+        return KeyState::UP;
+    }
+    return keyboardKeyStates[it->second];
+}
+
+KeyState InputState::getControllerKeyState(int player, const char *keycode) {
+    player -= 1; // Lua API 1-indexes everything, player 1 will index at 0
+    if (playerIsInvalid(player)) {
+        return UP;
+    }
+    const SDL_GameControllerButton button =
+        SDL_GameControllerGetButtonFromString(keycode);
+    if (button == SDL_CONTROLLER_BUTTON_INVALID) {
+        return UP;
+    }
+    return controllerStates[static_cast<size_t>(player)]
+        .buttons[static_cast<size_t>(button)];
+}
 
 void InputState::resetFrame() {
     for (KeyState &k : keyboardKeyStates) {
@@ -171,8 +185,6 @@ void InputState::handleEvent(SDL_Event &e) {
         if (controller == nullptr) {
             break;
         }
-        // std::cout << "Connected player "
-        //           << SDL_GameControllerGetPlayerIndex(controller) << '\n';
         ++numControllersOpen;
         break;
     }
@@ -180,7 +192,6 @@ void InputState::handleEvent(SDL_Event &e) {
         SDL_GameController *controller =
             SDL_GameControllerFromInstanceID(e.cdevice.which);
         SDL_GameControllerClose(controller);
-        // std::cout << "Controller disconnected\n";
         --numControllersOpen;
         break;
     }
@@ -190,25 +201,27 @@ void InputState::handleEvent(SDL_Event &e) {
 }
 
 // View keyboard
-bool InputState::getKey(const std::string &keycode) {
-    const auto it = keycodeToScancode.find(keycode);
-    if (it == keycodeToScancode.end()) {
-        return false;
-    }
-    return keyboardKeyStates[it->second] == DOWN ||
-           keyboardKeyStates[it->second] == JUST_DOWN;
+bool InputState::getKey(const char *keycode) {
+    const KeyState k = getKeyboardKeyState(keycode);
+    return k == JUST_DOWN || k == DOWN;
 }
-bool InputState::getKeyDown(const std::string &keycode) {
-    const auto it = keycodeToScancode.find(keycode);
-    if (it == keycodeToScancode.end()) {
-        return false;
-    }
-    return keyboardKeyStates[it->second] == JUST_DOWN;
+bool InputState::getKeyDown(const char *keycode) {
+    const KeyState k = getKeyboardKeyState(keycode);
+    return k == JUST_DOWN;
 }
-bool InputState::getKeyUp(const std::string &keycode) {
-    const auto it = keycodeToScancode.find(keycode);
-    if (it == keycodeToScancode.end()) {
-        return false;
-    }
-    return keyboardKeyStates[it->second] == JUST_UP;
+bool InputState::getKeyUp(const char *keycode) {
+    const KeyState k = getKeyboardKeyState(keycode);
+    return k == JUST_UP;
+}
+bool InputState::getControllerKey(int player, const char *keycode) {
+    KeyState k = getControllerKeyState(player, keycode);
+    return k == JUST_DOWN || k == DOWN;
+}
+bool InputState::getControllerKeyDown(int player, const char *keycode) {
+    KeyState k = getControllerKeyState(player, keycode);
+    return k == JUST_DOWN;
+}
+bool InputState::getControllerKeyUp(int player, const char *keycode) {
+    KeyState k = getControllerKeyState(player, keycode);
+    return k == JUST_UP;
 }

@@ -10,7 +10,6 @@
 
 #include <array>
 #include <cstdint>
-#include <string>
 
 struct lua_State;
 
@@ -30,9 +29,9 @@ public:
     static void handleEvent(SDL_Event &e);
 
     // View keyboard
-    static bool getKey(const std::string &keycode);
-    static bool getKeyDown(const std::string &keycode);
-    static bool getKeyUp(const std::string &keycode);
+    static bool getKey(const char *keycode);
+    static bool getKeyDown(const char *keycode);
+    static bool getKeyUp(const char *keycode);
 
     // View mouse
     static bool getMouseButton(Uint8 b) {
@@ -48,6 +47,11 @@ public:
     }
     static glm::vec2 getMousePosition() { return mousePosition; };
     static float getMouseScrollDelta() { return scrollDelta; };
+
+    // View controller
+    static bool getControllerKey(int player, const char *keycode);
+    static bool getControllerKeyUp(int player, const char *keycode);
+    static bool getControllerKeyDown(int player, const char *keycode);
 
     // Cursor
     static void hideCursor() { SDL_ShowCursor(SDL_DISABLE); }
@@ -65,6 +69,11 @@ private:
 
     // Controller states
     static inline uint8_t numControllersOpen = 0;
-    static constexpr size_t MAX_NUM_PLAYERS = 8;
-    static inline std::array<ControllerState, MAX_NUM_PLAYERS> controllerStates;
+    static constexpr int NUM_MAX_PLAYERS = 8;
+    static inline std::array<ControllerState, NUM_MAX_PLAYERS> controllerStates;
+
+    // Helper functions
+    static inline KeyState getKeyboardKeyState(const char *keycode);
+    static inline KeyState getControllerKeyState(int player, // starts with 1
+                                                 const char *keycode);
 };
