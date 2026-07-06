@@ -17,18 +17,8 @@ enum KeyState : uint8_t { UP, JUST_DOWN, DOWN, JUST_UP };
 
 static constexpr int NUM_MAX_PLAYERS = 8;
 
-namespace {
-inline bool isDown(KeyState k) { return k == JUST_DOWN || k == DOWN; }
-inline bool isJustDown(KeyState k) { return k == JUST_DOWN; }
-inline bool isJustUp(KeyState k) { return k == JUST_UP; }
-} // namespace
-
 struct KeyboardState {
     std::array<KeyState, SDL_NUM_SCANCODES> buttons{};
-
-    [[nodiscard]] bool getKey(const char *keycode) const;
-    [[nodiscard]] bool getKeyDown(const char *keycode) const;
-    [[nodiscard]] bool getKeyUp(const char *keycode) const;
 
     [[nodiscard]] KeyState getButton(const char *keycode) const;
     void setButton(SDL_Scancode button, KeyState keyState);
@@ -41,12 +31,8 @@ struct MouseState {
     glm::vec2 position{0.0F, 0.0F};
     float scrollDelta = 0.0F;
 
-    [[nodiscard]] bool getKey(uint8_t button) const;
-    [[nodiscard]] bool getKeyDown(uint8_t button) const;
-    [[nodiscard]] bool getKeyUp(uint8_t button) const;
-
     [[nodiscard]] KeyState getButton(uint8_t button) const;
-    void setButton(SDL_Scancode button, KeyState keyState);
+    void setButton(uint8_t button, KeyState keyState);
     [[nodiscard]] glm::vec2 getMousePosition() const;
     void setMousePosition(glm::vec2);
     [[nodiscard]] float getScrollDelta() const;
@@ -59,9 +45,9 @@ struct ControllerState {
     std::array<KeyState, SDL_CONTROLLER_BUTTON_MAX> buttons{};
     std::array<float, SDL_CONTROLLER_AXIS_MAX> axes{};
 
-    KeyState getButton(const char *keycode) const;
+    [[nodiscard]] KeyState getButton(const char *keycode) const;
     void setButton(SDL_GameControllerButton button, KeyState keyState);
-    float getAxis(const char *keycode) const;
+    [[nodiscard]] float getAxis(const char *keycode) const;
     void setAxis(SDL_GameControllerAxis axis, float value);
 
     void resetFrame();
@@ -104,17 +90,6 @@ public:
     static void registerLuaBindings(lua_State *L);
 
 private:
-    // Keyboard and mouse states
-    // static inline std::array<KeyState, SDL_NUM_SCANCODES> keyboardKeyStates;
-    // static inline std::array<KeyState, 4> mouseKeyStates;
-    // static inline glm::vec2 mousePosition;
-    // static inline float scrollDelta = 0.0F;
-
-    // // Controller states
+    // Controller states
     static inline uint8_t numControllersOpen = 0;
-
-    // Helper functions
-    // static inline KeyState getKeyboardKeyState(const char *keycode);
-    // static inline KeyState getControllerKeyState(int player, // starts with 1
-    //                                              const char *keycode);
 };

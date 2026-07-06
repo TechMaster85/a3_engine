@@ -2,19 +2,6 @@
 
 #include "keyboard_scancode_map.h"
 
-bool KeyboardState::getKey(const char* keycode) const {
-    const KeyState k = getButton(keycode);
-    return k == JUST_DOWN || k == DOWN;
-}
-
-bool KeyboardState::getKeyDown(const char* keycode) const {
-    return getButton(keycode) == JUST_DOWN;
-}
-
-bool KeyboardState::getKeyUp(const char* keycode) const {
-    return getButton(keycode) == JUST_UP;
-}
-
 KeyState KeyboardState::getButton(const char* keycode) const {
     const auto it = keycodeToScancode.find(keycode);
     if (it == keycodeToScancode.end()) {

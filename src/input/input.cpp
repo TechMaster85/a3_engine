@@ -3,31 +3,18 @@
 #include <SDL_events.h>
 #include <SDL_gamecontroller.h>
 
+#include <cassert>
 #include <cstdint>
 
 namespace {
-inline bool playerIsInvalid(int player) { return (player < 0 || player >= 8); }
-
-inline void setKeyToHold(KeyState &k) {
-    // JUST_DOWN and JUST_UP are enums 1 and 3, respectively
-    const uint8_t justOn = (k & 1);
-    k = static_cast<KeyState>((k + justOn) & 0b11);
+inline bool playerIsInvalid(int player) {
+    return (player < 1 || player > NUM_MAX_PLAYERS);
 }
+
+inline bool isDown(KeyState k) { return k == JUST_DOWN || k == DOWN; }
+inline bool isJustDown(KeyState k) { return k == JUST_DOWN; }
+inline bool isJustUp(KeyState k) { return k == JUST_UP; }
 } // namespace
-
-void InputState::resetFrame() {
-    for (KeyState &k : keyboard.buttons) {
-        setKeyToHold(k);
-    }
-    for (KeyState &k : mouse.buttons) {
-        setKeyToHold(k);
-    }
-    for (ControllerState &controller : controllers) {
-        for (KeyState &k : controller.buttons) {
-            setKeyToHold(k);
-        }
-    }
-}
 
 void InputState::handleEvent(SDL_Event &e) {
     switch (e.type) {
@@ -102,43 +89,46 @@ void InputState::handleEvent(SDL_Event &e) {
 
 // View
 bool InputState::getKey(const char *keycode) {
-    const KeyState k = keyboard.getButton(keycode);
-    return k == JUST_DOWN || k == DOWN;
+    return isDown(keyboard.getButton(keycode));
 }
 bool InputState::getKeyDown(const char *keycode) {
-    const KeyState k = keyboard.getButton(keycode);
-    return k == JUST_DOWN;
+    return isJustDown(keyboard.getButton(keycode));
 }
 bool InputState::getKeyUp(const char *keycode) {
-    const KeyState k = keyboard.getButton(keycode);
-    return k == JUST_UP;
+    return isJustUp(keyboard.getButton(keycode));
 }
 
 bool InputState::getMouseButton(uint8_t b) {
-    const KeyState k = mouse.getButton(b);
-    return k == JUST_DOWN || k == DOWN;
+    return isDown(mouse.getButton(b));
 }
 bool InputState::getMouseButtonDown(uint8_t b) {
-    const KeyState k = mouse.getButton(b);
-    return k == JUST_DOWN;
+    return isJustDown(mouse.getButton(b));
 }
 bool InputState::getMouseButtonUp(uint8_t b) {
-    const KeyState k = mouse.getButton(b);
-    return k == JUST_UP;
+    return isJustUp(mouse.getButton(b));
 }
 
 glm::vec2 InputState::getMousePosition() { return mouse.position; }
 float InputState::getMouseScrollDelta() { return mouse.scrollDelta; }
 
 bool InputState::getControllerKey(int player, const char *keycode) {
-    KeyState k = controllers[player - 1].getButton(keycode);
-    return k == JUST_DOWN || k == DOWN;
+    return !playerIsInvalid(player) && isDown(
+        controllers[static_cast<size_t>(player - 1)].getButton(keycode));
 }
 bool InputState::getControllerKeyDown(int player, const char *keycode) {
-    KeyState k = controllers[player - 1].getButton(keycode);
-    return k == JUST_DOWN;
+    return !playerIsInvalid(player) &&
+           isJustDown(
+               controllers[static_cast<size_t>(player - 1)].getButton(keycode));
 }
 bool InputState::getControllerKeyUp(int player, const char *keycode) {
-    KeyState k = controllers[player - 1].getButton(keycode);
-    return k == JUST_UP;
+    return !playerIsInvalid(player) && isJustUp(
+        controllers[static_cast<size_t>(player - 1)].getButton(keycode));
+}
+
+void InputState::resetFrame() {
+    keyboard.resetFrame();
+    mouse.resetFrame();
+    for (ControllerState &controller : controllers) {
+        controller.resetFrame();
+    }
 }

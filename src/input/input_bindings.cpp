@@ -23,9 +23,9 @@ void InputState::registerLuaBindings(lua_State *L) {
         .addFunction("ShowCursor", &InputState::showCursor)
 
         // Controller
-        .addFunction("GetControllerKey", &InputState::getKey)
-        .addFunction("GetControllerKeyDown", &InputState::getKeyDown)
-        .addFunction("GetControllerKeyUp", &InputState::getKeyUp)
+        .addFunction("GetControllerKey", &InputState::getControllerKey)
+        .addFunction("GetControllerKeyDown", &InputState::getControllerKeyDown)
+        .addFunction("GetControllerKeyUp", &InputState::getControllerKeyUp)
 
         .endNamespace();
 }
