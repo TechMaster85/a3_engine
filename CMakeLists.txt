@@ -192,6 +192,20 @@ if(NINTENDO_SWITCH)
   )
 endif()
 
+if(WIN32)
+  set(SDL2_DLLS
+    "${sdl2_vc_SOURCE_DIR}/lib/x64/SDL2.dll"
+    "${sdl2_image_vc_SOURCE_DIR}/lib/x64/SDL2_image.dll"
+    "${sdl2_ttf_vc_SOURCE_DIR}/lib/x64/SDL2_ttf.dll"
+    "${sdl2_mixer_vc_SOURCE_DIR}/lib/x64/SDL2_mixer.dll"
+  )
+
+  add_custom_command(TARGET game_engine POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy ${SDL2_DLLS} "$<TARGET_FILE_DIR:${PROJECT_NAME}>/"
+    VERBATIM
+  )
+endif()
+
 # On Apple the bundle layout requires resources inside Contents/Resources/;
 # everywhere else they sit next to the binary.
 if(APPLE)
