@@ -7,8 +7,9 @@
 #include <cstdint>
 
 namespace {
+// player is a 0-indexed slot into InputState::controllers
 inline bool playerIsInvalid(int player) {
-    return (player < 1 || player > NUM_MAX_PLAYERS);
+    return (player < 0 || player >= NUM_MAX_PLAYERS);
 }
 
 inline bool isDown(KeyState k) { return k == JUST_DOWN || k == DOWN; }
@@ -67,6 +68,9 @@ void InputState::handleEvent(SDL_Event &e) {
         break;
     }
     case SDL_CONTROLLERDEVICEADDED: {
+        // e.cdevice.which is a device index here, not an instance ID.
+        // SDL auto-assigns a free player index on add (SDL_joystick.c's
+        // SDL_FindFreePlayerIndex), so no manual bookkeeping is needed.
         SDL_GameController *controller =
             SDL_GameControllerOpen(e.cdevice.which);
         if (controller == nullptr) {
@@ -112,17 +116,22 @@ glm::vec2 InputState::getMousePosition() { return mouse.position; }
 float InputState::getMouseScrollDelta() { return mouse.scrollDelta; }
 
 bool InputState::getControllerKey(int player, const char *keycode) {
-    return !playerIsInvalid(player) && isDown(
-        controllers[static_cast<size_t>(player - 1)].getButton(keycode));
+    const int slot = player - 1;
+    return !playerIsInvalid(slot) &&
+           isDown(controllers[static_cast<size_t>(slot)].getButton(keycode));
 }
 bool InputState::getControllerKeyDown(int player, const char *keycode) {
-    return !playerIsInvalid(player) &&
-           isJustDown(
-               controllers[static_cast<size_t>(player - 1)].getButton(keycode));
+    const int slot = player - 1;
+    return !playerIsInvalid(slot) && isJustDown(controllers[static_cast<size_t>(slot)]
+                                                     .getButton(keycode));
 }
 bool InputState::getControllerKeyUp(int player, const char *keycode) {
-    return !playerIsInvalid(player) && isJustUp(
-        controllers[static_cast<size_t>(player - 1)].getButton(keycode));
+    const int slot = player - 1;
+    return !playerIsInvalid(slot) &&
+           isJustUp(controllers[static_cast<size_t>(slot)].getButton(keycode));
+}
+int InputState::getNumControllers() {
+    return numControllersOpen;
 }
 
 void InputState::resetFrame() {

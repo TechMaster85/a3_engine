@@ -26,6 +26,7 @@ void InputState::registerLuaBindings(lua_State *L) {
         .addFunction("GetControllerKey", &InputState::getControllerKey)
         .addFunction("GetControllerKeyDown", &InputState::getControllerKeyDown)
         .addFunction("GetControllerKeyUp", &InputState::getControllerKeyUp)
+        .addFunction("GetNumControllers", &InputState::getNumControllers)
 
         .endNamespace();
 }

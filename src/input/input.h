@@ -85,11 +85,12 @@ public:
     static bool getControllerKey(int player, const char *keycode);
     static bool getControllerKeyUp(int player, const char *keycode);
     static bool getControllerKeyDown(int player, const char *keycode);
+    static int getNumControllers();
 
     // Lua
     static void registerLuaBindings(lua_State *L);
 
 private:
     // Controller states
-    static inline uint8_t numControllersOpen = 0;
+    static inline int numControllersOpen = 0;
 };

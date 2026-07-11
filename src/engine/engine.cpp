@@ -33,6 +33,15 @@ void Engine::startup() {
     SDL_SetHint(SDL_HINT_JOYSTICK_MFI, "0");
 #endif
 
+#ifdef _WIN32
+    // Windows.Gaming.Input enumerates the same physical XInput controller a
+    // second time as a separate device, giving it its own SDL_JoystickID.
+    // Our per-instance-ID player slot allocation then treats one physical
+    // controller as two, and whichever "ghost" instance actually delivers
+    // button/axis events may not be the one holding the player's slot.
+    SDL_SetHint(SDL_HINT_JOYSTICK_WGI, "0");
+#endif
+
     SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMECONTROLLER);
     ComponentManager();
     DocumentManager();

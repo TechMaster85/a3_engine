@@ -28,7 +28,8 @@ luabridge::LuaRef createLuaComponent(const char *componentTypeName) {
         }
 
         if (luaL_dofile(Engine::L, filePath.string().c_str()) != LUA_OK) {
-            std::cout << "problem with lua file " << componentTypeName;
+            std::cout << "problem with lua file " << componentTypeName << ": "
+                      << lua_tostring(Engine::L, -1) << "\n";
             exit(1);
         }
 
