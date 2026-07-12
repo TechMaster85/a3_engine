@@ -82,9 +82,9 @@ public:
     static void showCursor() { SDL_ShowCursor(SDL_ENABLE); }
 
     // View controller
-    static bool getControllerKey(int player, const char *keycode);
-    static bool getControllerKeyUp(int player, const char *keycode);
-    static bool getControllerKeyDown(int player, const char *keycode);
+    static bool getControllerKey(const char *keycode, int player);
+    static bool getControllerKeyUp(const char *keycode, int player);
+    static bool getControllerKeyDown(const char *keycode, int player);
     static int getNumControllers();
 
     // Lua

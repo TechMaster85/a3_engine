@@ -4,7 +4,7 @@
 
 #include <filesystem>
 
-#if !defined(__SWITCH__) || !defined(_WIN32)
+#if !defined(__SWITCH__) && !defined(_WIN32)
 namespace {
 // Will be *.app/Contents/Resources on macOS, otherwise path of executable
 std::filesystem::path getBasePath() {

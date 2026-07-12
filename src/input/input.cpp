@@ -115,17 +115,17 @@ bool InputState::getMouseButtonUp(uint8_t b) {
 glm::vec2 InputState::getMousePosition() { return mouse.position; }
 float InputState::getMouseScrollDelta() { return mouse.scrollDelta; }
 
-bool InputState::getControllerKey(int player, const char *keycode) {
+bool InputState::getControllerKey(const char *keycode, int player) {
     const int slot = player - 1;
     return !playerIsInvalid(slot) &&
            isDown(controllers[static_cast<size_t>(slot)].getButton(keycode));
 }
-bool InputState::getControllerKeyDown(int player, const char *keycode) {
+bool InputState::getControllerKeyDown(const char *keycode, int player) {
     const int slot = player - 1;
     return !playerIsInvalid(slot) && isJustDown(controllers[static_cast<size_t>(slot)]
                                                      .getButton(keycode));
 }
-bool InputState::getControllerKeyUp(int player, const char *keycode) {
+bool InputState::getControllerKeyUp(const char *keycode, int player) {
     const int slot = player - 1;
     return !playerIsInvalid(slot) &&
            isJustUp(controllers[static_cast<size_t>(slot)].getButton(keycode));
