@@ -17,6 +17,30 @@ inline bool isJustDown(KeyState k) { return k == JUST_DOWN; }
 inline bool isJustUp(KeyState k) { return k == JUST_UP; }
 } // namespace
 
+int InputState::findPlayerSlot(SDL_JoystickID instanceId) {
+    for (int i = 0; i < NUM_MAX_PLAYERS; ++i) {
+        if (slotInstanceId[static_cast<size_t>(i)] == instanceId) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+int InputState::allocatePlayerSlot(SDL_JoystickID instanceId) {
+    const int slot = findPlayerSlot(-1); // first empty slot
+    if (slot != -1) {
+        slotInstanceId[static_cast<size_t>(slot)] = instanceId;
+    }
+    return slot;
+}
+
+void InputState::freePlayerSlot(SDL_JoystickID instanceId) {
+    const int slot = findPlayerSlot(instanceId);
+    if (slot != -1) {
+        slotInstanceId[static_cast<size_t>(slot)] = -1;
+    }
+}
+
 void InputState::handleEvent(SDL_Event &e) {
     switch (e.type) {
     case SDL_KEYDOWN:
@@ -38,8 +62,7 @@ void InputState::handleEvent(SDL_Event &e) {
         mouse.scrollDelta += e.wheel.preciseY;
         break;
     case SDL_CONTROLLERAXISMOTION: {
-        const int player = SDL_GameControllerGetPlayerIndex(
-            SDL_GameControllerFromInstanceID(e.caxis.which));
+        const int player = findPlayerSlot(e.caxis.which);
         if (playerIsInvalid(player)) {
             break;
         }
@@ -48,8 +71,7 @@ void InputState::handleEvent(SDL_Event &e) {
         break;
     }
     case SDL_CONTROLLERBUTTONDOWN: {
-        const int player = SDL_GameControllerGetPlayerIndex(
-            SDL_GameControllerFromInstanceID(e.cbutton.which));
+        const int player = findPlayerSlot(e.cbutton.which);
         if (playerIsInvalid(player)) {
             break;
         }
@@ -58,8 +80,7 @@ void InputState::handleEvent(SDL_Event &e) {
         break;
     };
     case SDL_CONTROLLERBUTTONUP: {
-        const int player = SDL_GameControllerGetPlayerIndex(
-            SDL_GameControllerFromInstanceID(e.cbutton.which));
+        const int player = findPlayerSlot(e.cbutton.which);
         if (playerIsInvalid(player)) {
             break;
         }
@@ -68,22 +89,35 @@ void InputState::handleEvent(SDL_Event &e) {
         break;
     }
     case SDL_CONTROLLERDEVICEADDED: {
-        // e.cdevice.which is a device index here, not an instance ID.
-        // SDL auto-assigns a free player index on add (SDL_joystick.c's
-        // SDL_FindFreePlayerIndex), so no manual bookkeeping is needed.
+        // e.cdevice.which is a device index here, not an instance ID. We
+        // don't rely on SDL's own player-index auto-assignment: on the
+        // Switch backend, all controllers are announced through a bootstrap
+        // path (SDL_GameControllerInit's initial scan) that never calls the
+        // function that assigns a player index, so
+        // SDL_GameControllerGetPlayerIndex would return -1 forever. We
+        // track player slots ourselves instead, keyed by instance ID, which
+        // is reliably present on every backend.
         SDL_GameController *controller =
             SDL_GameControllerOpen(e.cdevice.which);
         if (controller == nullptr) {
             break;
         }
-        ++numControllersOpen;
+        const SDL_JoystickID instanceId =
+            SDL_JoystickInstanceID(SDL_GameControllerGetJoystick(controller));
+        const int slot = allocatePlayerSlot(instanceId);
+        if (slot == -1) {
+            SDL_GameControllerClose(controller);
+            break;
+        }
+        SDL_GameControllerSetPlayerIndex(controller, slot); // cosmetic (LED) only
         break;
     }
     case SDL_CONTROLLERDEVICEREMOVED: {
+        // e.cdevice.which is an instance ID here, unlike on device added
         SDL_GameController *controller =
             SDL_GameControllerFromInstanceID(e.cdevice.which);
+        freePlayerSlot(e.cdevice.which);
         SDL_GameControllerClose(controller);
-        --numControllersOpen;
         break;
     }
     default:
@@ -131,7 +165,13 @@ bool InputState::getControllerKeyUp(const char *keycode, int player) {
            isJustUp(controllers[static_cast<size_t>(slot)].getButton(keycode));
 }
 int InputState::getNumControllers() {
-    return numControllersOpen;
+    int count = 0;
+    for (SDL_JoystickID id : slotInstanceId) {
+        if (id != -1) {
+            ++count;
+        }
+    }
+    return count;
 }
 
 void InputState::resetFrame() {

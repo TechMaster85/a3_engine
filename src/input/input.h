@@ -91,6 +91,13 @@ public:
     static void registerLuaBindings(lua_State *L);
 
 private:
-    // Controller states
-    static inline int numControllersOpen = 0;
+    // slotInstanceId[i] == -1 means slot i is empty; otherwise it holds the
+    // SDL_JoystickID of whichever controller occupies it. -1 is a safe
+    // sentinel because SDL only ever assigns instance IDs >= 0.
+    static inline std::array<SDL_JoystickID, NUM_MAX_PLAYERS> slotInstanceId{
+        -1, -1, -1, -1, -1, -1, -1, -1};
+
+    static int findPlayerSlot(SDL_JoystickID instanceId);
+    static int allocatePlayerSlot(SDL_JoystickID instanceId);
+    static void freePlayerSlot(SDL_JoystickID instanceId);
 };
