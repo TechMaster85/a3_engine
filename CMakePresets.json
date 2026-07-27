@@ -62,15 +62,27 @@
     },
     {
       "name": "macos-debug",
-      "displayName": "macOS Debug",
+      "displayName": "macOS Debug (UNIX executable)",
       "inherits": "macos-base",
-      "cacheVariables": { "CMAKE_BUILD_TYPE": "Debug" }
+      "cacheVariables": { "CMAKE_BUILD_TYPE": "Debug", "A3_MACOS_BUNDLE": "OFF" }
     },
     {
       "name": "macos-release",
-      "displayName": "macOS Release",
+      "displayName": "macOS Release (UNIX executable)",
       "inherits": "macos-base",
-      "cacheVariables": { "CMAKE_BUILD_TYPE": "Release" }
+      "cacheVariables": { "CMAKE_BUILD_TYPE": "Release", "A3_MACOS_BUNDLE": "OFF" }
+    },
+    {
+      "name": "macos-bundle-debug",
+      "displayName": "macOS Debug (.app bundle)",
+      "inherits": "macos-base",
+      "cacheVariables": { "CMAKE_BUILD_TYPE": "Debug", "A3_MACOS_BUNDLE": "ON" }
+    },
+    {
+      "name": "macos-bundle-release",
+      "displayName": "macOS Release (.app bundle)",
+      "inherits": "macos-base",
+      "cacheVariables": { "CMAKE_BUILD_TYPE": "Release", "A3_MACOS_BUNDLE": "ON" }
     },
     {
       "name": "linux-debug",
@@ -86,9 +98,15 @@
     },
     {
       "name": "macos-profiling",
-      "displayName": "macOS Profiling",
+      "displayName": "macOS Profiling (UNIX executable)",
       "inherits": "macos-base",
-      "cacheVariables": { "CMAKE_BUILD_TYPE": "RelWithDebInfo" }
+      "cacheVariables": { "CMAKE_BUILD_TYPE": "RelWithDebInfo", "A3_MACOS_BUNDLE": "OFF" }
+    },
+    {
+      "name": "macos-bundle-profiling",
+      "displayName": "macOS Profiling (.app bundle)",
+      "inherits": "macos-base",
+      "cacheVariables": { "CMAKE_BUILD_TYPE": "RelWithDebInfo", "A3_MACOS_BUNDLE": "ON" }
     },
     {
       "name": "linux-profiling",
@@ -108,9 +126,12 @@
     { "name": "windows-debug",      "displayName": "Windows Debug",      "configurePreset": "windows-msvc",    "configuration": "Debug" },
     { "name": "windows-release",    "displayName": "Windows Release",    "configurePreset": "windows-msvc",    "configuration": "Release" },
     { "name": "windows-profiling",  "displayName": "Windows Profiling",  "configurePreset": "windows-msvc",    "configuration": "RelWithDebInfo" },
-    { "name": "macos-debug",        "displayName": "macOS Debug",        "configurePreset": "macos-debug" },
-    { "name": "macos-release",      "displayName": "macOS Release",      "configurePreset": "macos-release" },
-    { "name": "macos-profiling",    "displayName": "macOS Profiling",    "configurePreset": "macos-profiling" },
+    { "name": "macos-debug",        "displayName": "macOS Debug (UNIX executable)",   "configurePreset": "macos-debug" },
+    { "name": "macos-release",      "displayName": "macOS Release (UNIX executable)", "configurePreset": "macos-release" },
+    { "name": "macos-profiling",    "displayName": "macOS Profiling (UNIX executable)", "configurePreset": "macos-profiling" },
+    { "name": "macos-bundle-debug",     "displayName": "macOS Debug (.app bundle)",     "configurePreset": "macos-bundle-debug" },
+    { "name": "macos-bundle-release",   "displayName": "macOS Release (.app bundle)",   "configurePreset": "macos-bundle-release" },
+    { "name": "macos-bundle-profiling", "displayName": "macOS Profiling (.app bundle)", "configurePreset": "macos-bundle-profiling" },
     { "name": "linux-debug",        "displayName": "Linux Debug",        "configurePreset": "linux-debug" },
     { "name": "linux-release",      "displayName": "Linux Release",      "configurePreset": "linux-release" },
     { "name": "linux-profiling",    "displayName": "Linux Profiling",    "configurePreset": "linux-profiling" },
@@ -133,6 +154,17 @@
       "name": "macos-release",
       "displayName": "macOS Release ZIP",
       "configurePreset": "macos-release",
+      "generators": ["ZIP"],
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Darwin"
+      }
+    },
+    {
+      "name": "macos-bundle-release",
+      "displayName": "macOS Release ZIP (.app bundle)",
+      "configurePreset": "macos-bundle-release",
       "generators": ["ZIP"],
       "condition": {
         "type": "equals",

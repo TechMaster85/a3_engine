@@ -6,6 +6,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+option(A3_MACOS_BUNDLE "On macOS, build game_engine as an .app bundle instead of a plain UNIX executable" OFF)
+
 # Make sure clangd can easily find all files no matter where build happens
 # Visual Studio generates compile_commands.json differently; skip the copy there
 if(NOT MSVC AND NOT CMAKE_GENERATOR STREQUAL "Xcode")
@@ -111,7 +113,7 @@ set_target_properties(game_engine PROPERTIES
     VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
 )
 
-if(APPLE)
+if(APPLE AND A3_MACOS_BUNDLE)
   set_target_properties(game_engine PROPERTIES
       MACOSX_BUNDLE TRUE
       MACOSX_BUNDLE_BUNDLE_NAME "game_engine"
@@ -206,9 +208,9 @@ if(WIN32)
   )
 endif()
 
-# On Apple the bundle layout requires resources inside Contents/Resources/;
-# everywhere else they sit next to the binary.
-if(APPLE)
+# The bundle layout requires resources inside Contents/Resources/;
+# everywhere else (including a plain macOS UNIX executable) they sit next to the binary.
+if(APPLE AND A3_MACOS_BUNDLE)
   set(_data_dir "$<TARGET_FILE_DIR:${PROJECT_NAME}>/../Resources")
 else()
   set(_data_dir "$<TARGET_FILE_DIR:${PROJECT_NAME}>")
@@ -220,7 +222,7 @@ add_custom_command(TARGET game_engine POST_BUILD
   VERBATIM
 )
 
-if(APPLE)
+if(APPLE AND A3_MACOS_BUNDLE)
   add_custom_command(TARGET game_engine POST_BUILD
     COMMAND ${CMAKE_COMMAND}
         "-DAPP=$<TARGET_FILE_DIR:${PROJECT_NAME}>/../.."
