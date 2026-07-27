@@ -43,7 +43,11 @@ void Engine::startup() {
 #endif
 
     SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMECONTROLLER);
-    ComponentManager();
+
+    L = luaL_newstate();
+    luaL_openlibs(L);
+
+    ComponentManager{L};
     DocumentManager();
     Audio();
     Config();
@@ -52,8 +56,6 @@ void Engine::startup() {
     SceneDB();
     TextDB();
 
-    L = luaL_newstate();
-    luaL_openlibs(L);
     LuaBindings::registerAll(L);
 
     SceneDB::loadScene(Config::initialScene);
