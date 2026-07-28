@@ -37,17 +37,10 @@ RigidbodyProperties::fromJson(const rapidjson::Value &json) {
     return rbInfo;
 }
 
-void Rigidbody::registerContactListener() {
-    static ContactListener listener;
-    static bool registered = false;
-    if (!registered) {
-        getWorld().SetContactListener(&listener);
-        registered = true;
-    }
-}
-
 b2World &Rigidbody::getWorld() {
     static b2World instance(b2Vec2(0.0F, GRAVITY));
+    static ContactListener listener;
+    instance.SetContactListener(&listener);
     return instance;
 }
 
@@ -55,8 +48,6 @@ Rigidbody::Rigidbody(RigidbodyProperties info, std::string key, Actor *actor)
     : key(std::move(key)), actor(actor), info(std::move(info)) {}
 
 void Rigidbody::onStart() {
-    registerContactListener();
-
     b2BodyDef bodyDef;
     bodyDef.position = {info.x, info.y};
     bodyDef.bullet = info.precise;

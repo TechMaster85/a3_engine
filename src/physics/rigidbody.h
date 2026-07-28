@@ -44,7 +44,6 @@ struct RigidbodyProperties {
 class Rigidbody {
     static constexpr float GRAVITY = 9.8F;
 
-    static void registerContactListener();
     void addFixture(bool isTrigger);
 
     b2Body *body = nullptr;
