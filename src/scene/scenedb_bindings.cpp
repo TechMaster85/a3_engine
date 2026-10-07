@@ -3,6 +3,7 @@
 #include <lua/lua.hpp>
 
 #include <LuaBridge/LuaBridge.h>
+#include <LuaBridge/Vector.h> // To automatically convert vectors into luarefs
 
 void SceneDB::registerLuaBindings(lua_State *L) {
     luabridge::getGlobalNamespace(L)

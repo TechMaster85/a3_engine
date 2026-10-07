@@ -2,7 +2,6 @@
 
 #include "actor.h"
 #include "documentmanager.h"
-#include "engine/engine.h"
 #include "physics/collision.h"
 
 #include <algorithm>
@@ -81,20 +80,19 @@ Actor *SceneDB::findActor(const std::string &name) {
     return nullptr;
 }
 
-luabridge::LuaRef SceneDB::findAllActors(const std::string &name) {
-    luabridge::LuaRef actorsTable = luabridge::newTable(Engine::L);
-    int actorsFound = 0;
+std::vector<Actor *> SceneDB::findAllActors(const std::string &name) {
+    std::vector<Actor *> found;
     for (const auto &actor : actors) {
         if (actor->getName() == name && !actor->destroyed) {
-            actorsTable[++actorsFound] = actor.get();
+            found.push_back(actor.get());
         }
     }
     for (const auto &actor : pendingAddedActors) {
         if (actor->getName() == name && !actor->destroyed) {
-            actorsTable[++actorsFound] = actor.get();
+            found.push_back(actor.get());
         }
     }
-    return actorsTable;
+    return found;
 }
 
 Actor *SceneDB::instantiateActor(const std::string &actorTemplateName) {

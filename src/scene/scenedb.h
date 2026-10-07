@@ -22,7 +22,7 @@ public:
     // Lua APIs for all actors
     static void loadScene(const std::string &sceneName);
     static Actor *findActor(const std::string &name);
-    static luabridge::LuaRef findAllActors(const std::string &name);
+    static std::vector<Actor *> findAllActors(const std::string &name);
     static Actor *instantiateActor(const std::string &actorTemplateName);
     static void destroyActor(Actor *actor);
     static void load(const std::string &sceneName);
